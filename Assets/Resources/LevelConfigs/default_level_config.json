@@ -1,0 +1,27 @@
+{
+  "meta": {
+    "brand_id": ""
+  },
+  "branding": {
+    "logo_watermark_url": "",
+    "colors": {
+      "primary": "",
+      "secondary": "",
+      "accent": ""
+    }
+  },
+  "game": {
+    "image_url": ""
+  },
+  "audio": {
+    "victory_sound_url": "",
+    "coin_sound_url": ""
+  },
+  "texts": {
+    "victory_phrase": "¡Felicidades, VERyGANA te saluda!"
+  },
+  "rewards": {
+    "coins_per_action": 0,
+    "coins_on_completion": 0
+  }
+}
