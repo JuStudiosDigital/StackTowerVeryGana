@@ -1,0 +1,1053 @@
+fileFormatVersion: 2
+guid: 8d18b4e5da5f31a43bbcb017a8a35551
+TextureImporter:
+  internalIDToNameTable:
+  - first:
+      213: 7392740964633301689
+    second: StackTower_UI_0
+  - first:
+      213: 7000433194645822504
+    second: StackTower_UI_1
+  - first:
+      213: 3112858670012638319
+    second: StackTower_UI_2
+  - first:
+      213: -6677039219540403595
+    second: StackTower_UI_3
+  - first:
+      213: 3808262388912246994
+    second: StackTower_UI_4
+  - first:
+      213: -6102151107191475809
+    second: StackTower_UI_5
+  - first:
+      213: 7652862379838236724
+    second: StackTower_UI_6
+  - first:
+      213: -6136510311634281420
+    second: StackTower_UI_7
+  - first:
+      213: 165745131915805267
+    second: StackTower_UI_8
+  - first:
+      213: 3573896467138374151
+    second: StackTower_UI_9
+  - first:
+      213: 51867480641123042
+    second: StackTower_UI_10
+  - first:
+      213: -820199218829018249
+    second: StackTower_UI_11
+  - first:
+      213: 1933104598432105513
+    second: StackTower_UI_12
+  - first:
+      213: -4353111290578151455
+    second: StackTower_UI_13
+  - first:
+      213: 4076457230107097135
+    second: StackTower_UI_14
+  - first:
+      213: -7705627749534207830
+    second: StackTower_UI_15
+  - first:
+      213: -7963946591807431416
+    second: StackTower_UI_16
+  - first:
+      213: 8398819796555389430
+    second: StackTower_UI_17
+  - first:
+      213: 7210745157631200918
+    second: StackTower_UI_18
+  - first:
+      213: -4130264079539782345
+    second: StackTower_UI_19
+  - first:
+      213: 7413728686544039410
+    second: StackTower_UI_20
+  - first:
+      213: -8364512439242295530
+    second: StackTower_UI_21
+  - first:
+      213: -7515840199347609627
+    second: StackTower_UI_22
+  - first:
+      213: 3236263433641054269
+    second: StackTower_UI_23
+  - first:
+      213: -2729423077126072379
+    second: StackTower_UI_24
+  - first:
+      213: 7760333424347650247
+    second: StackTower_UI_25
+  - first:
+      213: 5230685588905901868
+    second: StackTower_UI_26
+  - first:
+      213: -2474197146143340932
+    second: StackTower_UI_27
+  - first:
+      213: -6751129503933617974
+    second: StackTower_UI_28
+  - first:
+      213: 2848971120856601178
+    second: StackTower_UI_29
+  - first:
+      213: -3344784613055081499
+    second: StackTower_UI_30
+  - first:
+      213: -3412271910072180540
+    second: StackTower_UI_31
+  - first:
+      213: 5132762450481758354
+    second: StackTower_UI_32
+  - first:
+      213: -5595810649543918062
+    second: StackTower_UI_33
+  - first:
+      213: -6571332173131185944
+    second: StackTower_UI_34
+  - first:
+      213: -2972353570291962520
+    second: StackTower_UI_35
+  externalObjects: {}
+  serializedVersion: 13
+  mipmaps:
+    mipMapMode: 0
+    enableMipMap: 0
+    sRGBTexture: 1
+    linearTexture: 0
+    fadeOut: 0
+    borderMipMap: 0
+    mipMapsPreserveCoverage: 0
+    alphaTestReferenceValue: 0.5
+    mipMapFadeDistanceStart: 1
+    mipMapFadeDistanceEnd: 3
+  bumpmap:
+    convertToNormalMap: 0
+    externalNormalMap: 0
+    heightScale: 0.25
+    normalMapFilter: 0
+    flipGreenChannel: 0
+  isReadable: 0
+  streamingMipmaps: 0
+  streamingMipmapsPriority: 0
+  vTOnly: 0
+  ignoreMipmapLimit: 0
+  grayScaleToAlpha: 0
+  generateCubemap: 6
+  cubemapConvolution: 0
+  seamlessCubemap: 0
+  textureFormat: 1
+  maxTextureSize: 2048
+  textureSettings:
+    serializedVersion: 2
+    filterMode: 1
+    aniso: 1
+    mipBias: 0
+    wrapU: 1
+    wrapV: 1
+    wrapW: 1
+  nPOTScale: 0
+  lightmap: 0
+  compressionQuality: 50
+  spriteMode: 2
+  spriteExtrude: 1
+  spriteMeshType: 1
+  alignment: 0
+  spritePivot: {x: 0.5, y: 0.5}
+  spritePixelsToUnits: 100
+  spriteBorder: {x: 0, y: 0, z: 0, w: 0}
+  spriteGenerateFallbackPhysicsShape: 1
+  alphaUsage: 1
+  alphaIsTransparency: 1
+  spriteTessellationDetail: -1
+  textureType: 8
+  textureShape: 1
+  singleChannelComponent: 0
+  flipbookRows: 1
+  flipbookColumns: 1
+  maxTextureSizeSet: 0
+  compressionQualitySet: 0
+  textureFormatSet: 0
+  ignorePngGamma: 0
+  applyGammaDecoding: 0
+  swizzle: 50462976
+  cookieLightType: 0
+  platformSettings:
+  - serializedVersion: 4
+    buildTarget: DefaultTexturePlatform
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  - serializedVersion: 4
+    buildTarget: Standalone
+    maxTextureSize: 2048
+    resizeAlgorithm: 0
+    textureFormat: -1
+    textureCompression: 1
+    compressionQuality: 50
+    crunchedCompression: 0
+    allowsAlphaSplitting: 0
+    overridden: 0
+    ignorePlatformSupport: 0
+    androidETC2FallbackOverride: 0
+    forceMaximumCompressionQuality_BC6H_BC7: 0
+  spriteSheet:
+    serializedVersion: 2
+    sprites:
+    - serializedVersion: 2
+      name: StackTower_UI_0
+      rect:
+        serializedVersion: 2
+        x: 162
+        y: 1588
+        width: 706
+        height: 776
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9b252792dba489660800000000000000
+      internalID: 7392740964633301689
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_1
+      rect:
+        serializedVersion: 2
+        x: 988
+        y: 1698
+        width: 1027
+        height: 400
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 82c97b096e8862160800000000000000
+      internalID: 7000433194645822504
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_2
+      rect:
+        serializedVersion: 2
+        x: 2216
+        y: 1694
+        width: 954
+        height: 588
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f64291eb778133b20800000000000000
+      internalID: 3112858670012638319
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_3
+      rect:
+        serializedVersion: 2
+        x: 3476
+        y: 1962
+        width: 525
+        height: 139
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 57a51ffc4346653a0800000000000000
+      internalID: -6677039219540403595
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_4
+      rect:
+        serializedVersion: 2
+        x: 3494
+        y: 1832
+        width: 63
+        height: 70
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2d05896377aa9d430800000000000000
+      internalID: 3808262388912246994
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_5
+      rect:
+        serializedVersion: 2
+        x: 2043
+        y: 1740
+        width: 33
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f91781a06edc05ba0800000000000000
+      internalID: -6102151107191475809
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_6
+      rect:
+        serializedVersion: 2
+        x: 2825
+        y: 1685
+        width: 32
+        height: 9
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4386531b9cd643a60800000000000000
+      internalID: 7652862379838236724
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_7
+      rect:
+        serializedVersion: 2
+        x: 2846
+        y: 1693
+        width: 33
+        height: 7
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 43c548a526cb6daa0800000000000000
+      internalID: -6136510311634281420
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_8
+      rect:
+        serializedVersion: 2
+        x: 228
+        y: 1285
+        width: 571
+        height: 177
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 352871fb158dc4200800000000000000
+      internalID: 165745131915805267
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_9
+      rect:
+        serializedVersion: 2
+        x: 1023
+        y: 1287
+        width: 738
+        height: 222
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 70a6ecbc6e7099130800000000000000
+      internalID: 3573896467138374151
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_10
+      rect:
+        serializedVersion: 2
+        x: 2383
+        y: 1418
+        width: 7
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2e23207e23548b000800000000000000
+      internalID: 51867480641123042
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_11
+      rect:
+        serializedVersion: 2
+        x: 2401
+        y: 1398
+        width: 7
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 77bb4a4f7211e94f0800000000000000
+      internalID: -820199218829018249
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_12
+      rect:
+        serializedVersion: 2
+        x: 2445
+        y: 1391
+        width: 75
+        height: 93
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 9244837e364c3da10800000000000000
+      internalID: 1933104598432105513
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_13
+      rect:
+        serializedVersion: 2
+        x: 2540
+        y: 1397
+        width: 7
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 1e7d8515854a693c0800000000000000
+      internalID: -4353111290578151455
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_14
+      rect:
+        serializedVersion: 2
+        x: 2557
+        y: 1417
+        width: 7
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: f283b96b04c729830800000000000000
+      internalID: 4076457230107097135
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_15
+      rect:
+        serializedVersion: 2
+        x: 2874
+        y: 1421
+        width: 76
+        height: 82
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: aa0fe91536c101590800000000000000
+      internalID: -7705627749534207830
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_16
+      rect:
+        serializedVersion: 2
+        x: 2385
+        y: 1403
+        width: 6
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 80d922105c06a7190800000000000000
+      internalID: -7963946591807431416
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_17
+      rect:
+        serializedVersion: 2
+        x: 2415
+        y: 1377
+        width: 7
+        height: 27
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 6f9d33a2b1a9e8470800000000000000
+      internalID: 8398819796555389430
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_18
+      rect:
+        serializedVersion: 2
+        x: 2526
+        y: 1376
+        width: 6
+        height: 28
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 69ec9764486b11460800000000000000
+      internalID: 7210745157631200918
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_19
+      rect:
+        serializedVersion: 2
+        x: 2556
+        y: 1402
+        width: 7
+        height: 14
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 73db976e3ba5ea6c0800000000000000
+      internalID: -4130264079539782345
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_20
+      rect:
+        serializedVersion: 2
+        x: 2387
+        y: 1369
+        width: 7
+        height: 29
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 2fda496f5fad2e660800000000000000
+      internalID: 7413728686544039410
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_21
+      rect:
+        serializedVersion: 2
+        x: 2403
+        y: 1384
+        width: 6
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 61770abe0484beb80800000000000000
+      internalID: -8364512439242295530
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_22
+      rect:
+        serializedVersion: 2
+        x: 2539
+        y: 1383
+        width: 6
+        height: 13
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5efd849c82f52b790800000000000000
+      internalID: -7515840199347609627
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_23
+      rect:
+        serializedVersion: 2
+        x: 2554
+        y: 1368
+        width: 7
+        height: 30
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: d30d2c9427489ec20800000000000000
+      internalID: 3236263433641054269
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_24
+      rect:
+        serializedVersion: 2
+        x: 2801
+        y: 1246
+        width: 185
+        height: 138
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5c795262c242f1ad0800000000000000
+      internalID: -2729423077126072379
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_25
+      rect:
+        serializedVersion: 2
+        x: 2378
+        y: 1278
+        width: 218
+        height: 99
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 7c815d8222e32bb60800000000000000
+      internalID: 7760333424347650247
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_26
+      rect:
+        serializedVersion: 2
+        x: 2403
+        y: 1371
+        width: 6
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c2fbd7a64d0279840800000000000000
+      internalID: 5230685588905901868
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_27
+      rect:
+        serializedVersion: 2
+        x: 2538
+        y: 1370
+        width: 6
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: c7647dfedc2e9add0800000000000000
+      internalID: -2474197146143340932
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_28
+      rect:
+        serializedVersion: 2
+        x: 2574
+        y: 1321
+        width: 24
+        height: 12
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: ac8a0653c7b2f42a0800000000000000
+      internalID: -6751129503933617974
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_29
+      rect:
+        serializedVersion: 2
+        x: 2997
+        y: 1263
+        width: 79
+        height: 83
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: a521102d324998720800000000000000
+      internalID: 2848971120856601178
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_30
+      rect:
+        serializedVersion: 2
+        x: 2564
+        y: 1208
+        width: 83
+        height: 102
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 5e3d8a8ad10f491d0800000000000000
+      internalID: -3344784613055081499
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_31
+      rect:
+        serializedVersion: 2
+        x: 2598
+        y: 1298
+        width: 10
+        height: 22
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 4c0aa1bd6cc25a0d0800000000000000
+      internalID: -3412271910072180540
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_32
+      rect:
+        serializedVersion: 2
+        x: 225
+        y: 1039
+        width: 571
+        height: 177
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 290cd61114c3b3740800000000000000
+      internalID: 5132762450481758354
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_33
+      rect:
+        serializedVersion: 2
+        x: 2349
+        y: 1205
+        width: 185
+        height: 78
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 21e3693bcdfa752b0800000000000000
+      internalID: -5595810649543918062
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_34
+      rect:
+        serializedVersion: 2
+        x: 148
+        y: 93
+        width: 811
+        height: 830
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 8e08b677430fdc4a0800000000000000
+      internalID: -6571332173131185944
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    - serializedVersion: 2
+      name: StackTower_UI_35
+      rect:
+        serializedVersion: 2
+        x: 1237
+        y: 126
+        width: 1250
+        height: 910
+      alignment: 0
+      pivot: {x: 0, y: 0}
+      border: {x: 0, y: 0, z: 0, w: 0}
+      customData: 
+      outline: []
+      physicsShape: []
+      tessellationDetail: -1
+      bones: []
+      spriteID: 86d22ef0d2410c6d0800000000000000
+      internalID: -2972353570291962520
+      vertices: []
+      indices: 
+      edges: []
+      weights: []
+    outline: []
+    customData: 
+    physicsShape: []
+    bones: []
+    spriteID: 
+    internalID: 0
+    vertices: []
+    indices: 
+    edges: []
+    weights: []
+    secondaryTextures: []
+    spriteCustomMetadata:
+      entries: []
+    nameFileIdTable:
+      StackTower_UI_0: 7392740964633301689
+      StackTower_UI_1: 7000433194645822504
+      StackTower_UI_10: 51867480641123042
+      StackTower_UI_11: -820199218829018249
+      StackTower_UI_12: 1933104598432105513
+      StackTower_UI_13: -4353111290578151455
+      StackTower_UI_14: 4076457230107097135
+      StackTower_UI_15: -7705627749534207830
+      StackTower_UI_16: -7963946591807431416
+      StackTower_UI_17: 8398819796555389430
+      StackTower_UI_18: 7210745157631200918
+      StackTower_UI_19: -4130264079539782345
+      StackTower_UI_2: 3112858670012638319
+      StackTower_UI_20: 7413728686544039410
+      StackTower_UI_21: -8364512439242295530
+      StackTower_UI_22: -7515840199347609627
+      StackTower_UI_23: 3236263433641054269
+      StackTower_UI_24: -2729423077126072379
+      StackTower_UI_25: 7760333424347650247
+      StackTower_UI_26: 5230685588905901868
+      StackTower_UI_27: -2474197146143340932
+      StackTower_UI_28: -6751129503933617974
+      StackTower_UI_29: 2848971120856601178
+      StackTower_UI_3: -6677039219540403595
+      StackTower_UI_30: -3344784613055081499
+      StackTower_UI_31: -3412271910072180540
+      StackTower_UI_32: 5132762450481758354
+      StackTower_UI_33: -5595810649543918062
+      StackTower_UI_34: -6571332173131185944
+      StackTower_UI_35: -2972353570291962520
+      StackTower_UI_4: 3808262388912246994
+      StackTower_UI_5: -6102151107191475809
+      StackTower_UI_6: 7652862379838236724
+      StackTower_UI_7: -6136510311634281420
+      StackTower_UI_8: 165745131915805267
+      StackTower_UI_9: 3573896467138374151
+  mipmapLimitGroupName: 
+  pSDRemoveMatte: 0
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 
