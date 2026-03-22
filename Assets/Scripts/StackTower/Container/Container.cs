@@ -7,29 +7,19 @@ public class Container : MonoBehaviour
 
     private bool hasCollided = false;
 
-    [Header("Game Over")]
-    [SerializeField] private float gameOverY = 10f;
-
-    private bool gameOverTriggered = false;
-
     private void OnCollisionEnter2D(Collision2D collision)
     {
+        // 💀 GAME OVER si toca el mar
+        if (collision.gameObject.CompareTag("Sea"))
+        {
+            GameManagerStackTower.TriggerGameOver();
+            return;
+        }
+
+        // 👉 lógica normal (primer contacto)
         if (hasCollided) return;
 
         hasCollided = true;
         OnFirstCollision?.Invoke(this);
-    }
-
-    private void Update()
-    {
-        if (gameOverTriggered) return;
-
-        if (GameManagerStackTower.IsGameOver) return;
-
-        if (transform.position.y >= gameOverY)
-        {
-            gameOverTriggered = true;
-            GameManagerStackTower.TriggerGameOver();
-        }
     }
 }

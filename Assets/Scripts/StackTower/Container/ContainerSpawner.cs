@@ -5,6 +5,9 @@ public class ContainerSpawner : MonoBehaviour
     [SerializeField] private GameObject containerPrefab;
     [SerializeField] private Transform spawnPoint;
     [SerializeField] private ClawController claw;
+
+    //Sistema de monedas 
+    [SerializeField] private CoinSpawner coinSpawner;
     private void OnEnable()
     {
         Container.OnFirstCollision += HandleContainerCollision;
@@ -29,7 +32,19 @@ public class ContainerSpawner : MonoBehaviour
 {
     if (GameManagerStackTower.IsGameOver) return null;
 
-    return Instantiate(containerPrefab, spawnPoint.position, Quaternion.identity);
+    GameObject container = Instantiate(
+        containerPrefab,
+        spawnPoint.position,
+        Quaternion.identity
+    );
+
+    // 👉 avisar al CoinSpawner
+    if (coinSpawner != null)
+    {
+        coinSpawner.OnContainerSpawned(container.GetComponent<Container>());
+    }
+
+    return container;
 }
 
 }
