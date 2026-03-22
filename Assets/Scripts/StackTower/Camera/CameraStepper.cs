@@ -7,6 +7,9 @@ public class CameraStepper : MonoBehaviour
     [SerializeField] private float stepHeight = 2.5f;
     [SerializeField] private float moveDuration = 0.5f;
 
+    [Header("Sistema de nubes")]
+    [SerializeField] private CloudSystem cloudSystem;
+
     private bool isMoving = false;
 
     private void OnEnable()
@@ -23,6 +26,12 @@ public class CameraStepper : MonoBehaviour
     {
         if (!isMoving)
         {
+            // 👉 Generar nubes ANTES de subir
+            if (cloudSystem != null)
+            {
+                cloudSystem.SpawnCloudsAbove(transform.position.y);
+            }
+
             StartCoroutine(MoveUpRoutine());
         }
     }
@@ -54,4 +63,5 @@ public class CameraStepper : MonoBehaviour
 
         isMoving = false;
     }
+    
 }

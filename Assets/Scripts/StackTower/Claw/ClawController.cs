@@ -9,26 +9,36 @@ public class ClawController : MonoBehaviour
     [SerializeField] private float minX = -6f;
     [SerializeField] private float maxX = 6f;
 
-    [Header("Salida")]
-    [SerializeField] private float exitY = 8f;
- 
+    [Header("Salida lateral")]
+    [SerializeField] private float exitSpeed = 8f;
+    [SerializeField] private float exitOffset = 3f;
+
+    [Header("Posición de reinicio")]
+    [SerializeField] private float returnX = -8f; // 👈 configurable desde inspector
 
     [Header("Referencia")]
     [SerializeField] private ClawGrabber grabber;
     [SerializeField] private ContainerSpawner spawner;
-    [Header("Salida lateral")]
-    [SerializeField] private float exitSpeed = 8f;
-    [SerializeField] private float exitOffset = 3f;
+      [Header("Animator")]
+        [SerializeField] private Animator clawAnimator;
     private bool isActive = false;
     private bool isHolding = false;
+    private bool isExiting = false;
+    private bool isGameOver = false;
     private int direction = 1;
 
-    private bool isExiting = false;
+private void OnEnable()
+{
+    GameManagerStackTower.OnGameOver += HandleGameOver;
+}
 
+private void OnDisable()
+{
+    GameManagerStackTower.OnGameOver -= HandleGameOver;
+}
     private void Update()
 {
-    if (GameManagerStackTower.IsGameOver) return;
-
+    if (isGameOver) return; // 🔴 clave
     if (isExiting) return;
 
     HandleInput();
@@ -39,7 +49,7 @@ public class ClawController : MonoBehaviour
     }
 }
 
-    // 🔹 Movimiento horizontal
+    // 🔹 Movimiento horizontal automático
     private void AutoMove()
     {
         Vector3 pos = transform.position;
@@ -60,14 +70,14 @@ public class ClawController : MonoBehaviour
         transform.position = pos;
     }
 
-    // 🔹 INPUT
+    // 🔹 Input (click / espacio / touch)
     private void HandleInput()
     {
         bool pressed = false;
 
         if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
             pressed = true;
-
+          
         if (Keyboard.current != null)
         {
             if (Keyboard.current.spaceKey.wasPressedThisFrame ||
@@ -90,11 +100,17 @@ public class ClawController : MonoBehaviour
         else if (isHolding)
         {
             isHolding = false;
-            grabber.Release();
+            clawAnimator.SetTrigger("open");
+            Invoke("ReleaseContainer",0.2f);
         }
     }
 
-    // 🔴 LLAMADO DESDE EL EVENTO
+    private void ReleaseContainer()
+    {
+        grabber.Release();
+    }
+
+    // 🔴 Llamado desde ContainerSpawner
     public void StartExitSequence()
     {
         if (isExiting) return;
@@ -103,39 +119,65 @@ public class ClawController : MonoBehaviour
     }
 
     private IEnumerator ExitRoutine()
+    {
+        isExiting = true;
+
+        float exitTargetX = maxX + exitOffset;
+        float returnStartX = returnX; // 👈 configurable
+
+        // 👉 1. Salir hacia la derecha
+        while (transform.position.x < exitTargetX)
+        {
+            transform.position += Vector3.right * exitSpeed * Time.deltaTime;
+            yield return null;
+        }
+
+        // 👉 2. Spawn nuevo container
+        clawAnimator.SetTrigger("hold");
+        GameObject newContainer = spawner.Spawn();
+
+        // 👉 3. Forzar agarre
+        grabber.ForceGrab(newContainer);
+
+        // 👉 4. Teleport a posición definida
+        Vector3 pos = transform.position;
+        pos.x = returnStartX;
+        transform.position = pos;
+
+        // 👉 5. Volver al rango normal
+        while (transform.position.x < minX)
+        {
+            transform.position += Vector3.right * exitSpeed * Time.deltaTime;
+            yield return null;
+        }
+
+        // 👉 6. Reset estado
+        isExiting = false;
+        isHolding = true;
+    }
+    private void HandleGameOver()
+{
+    isGameOver = true;
+
+    // detener interacción
+    isActive = false;
+    isHolding = false;
+
+    // iniciar salida final
+    StartCoroutine(ExitForeverRoutine());
+}
+private IEnumerator ExitForeverRoutine()
 {
     isExiting = true;
 
     float exitTargetX = maxX + exitOffset;
-    float returnStartX = minX - exitOffset;
 
-    // 👉 1. Salir
     while (transform.position.x < exitTargetX)
     {
         transform.position += Vector3.right * exitSpeed * Time.deltaTime;
         yield return null;
     }
 
-    // 👉 2. Spawn
-    GameObject newContainer = spawner.Spawn();
-
-    // 👉 3. Forzar que la garra lo tenga
-    grabber.ForceGrab(newContainer);
-
-    // 👉 4. Teleport fuera de cámara (izquierda)
-    Vector3 pos = transform.position;
-    pos.x = returnStartX;
-    transform.position = pos;
-
-    // 👉 5. Volver al rango
-    while (transform.position.x < minX)
-    {
-        transform.position += Vector3.right * exitSpeed * Time.deltaTime;
-        yield return null;
-    }
-
-    // 👉 6. Reset estado
-    isExiting = false;
-    isHolding = true;
+    // 👉 aquí termina para siempre (no vuelve)
 }
 }

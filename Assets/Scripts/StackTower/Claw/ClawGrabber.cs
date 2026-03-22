@@ -63,13 +63,32 @@ public class ClawGrabber : MonoBehaviour
     }
     public void ForceGrab(GameObject obj)
 {
+    if (obj == null)
+    {
+        Debug.LogWarning("ForceGrab: objeto es null");
+        return;
+    }
+
+    if (grabPoint == null)
+    {
+        Debug.LogWarning("ForceGrab: grabPoint no asignado");
+        return;
+    }
+
     var rb = obj.GetComponent<Rigidbody2D>();
-    if (rb == null) return;
+
+    if (rb == null)
+    {
+        Debug.LogWarning("ForceGrab: el objeto no tiene Rigidbody2D");
+        return;
+    }
 
     grabbedBody = rb;
     grabbedTransform = obj.transform;
 
     // 🔒 modo quieto
+    grabbedBody.linearVelocity = Vector2.zero;
+    grabbedBody.angularVelocity = 0f;
     grabbedBody.bodyType = RigidbodyType2D.Kinematic;
 
     // 🔗 pegar a la garra
