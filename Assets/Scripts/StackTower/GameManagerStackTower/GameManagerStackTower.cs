@@ -13,6 +13,5 @@ public static class GameManagerStackTower
         IsGameOver = true;
         OnGameOver?.Invoke();
 
-        UnityEngine.Time.timeScale = 0f;
     }
 }

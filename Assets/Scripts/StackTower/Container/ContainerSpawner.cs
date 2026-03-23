@@ -8,6 +8,8 @@ public class ContainerSpawner : MonoBehaviour
 
     //Sistema de monedas 
     [SerializeField] private CoinSpawner coinSpawner;
+
+
     private void OnEnable()
     {
         Container.OnFirstCollision += HandleContainerCollision;
@@ -32,6 +34,7 @@ public class ContainerSpawner : MonoBehaviour
 {
     if (GameManagerStackTower.IsGameOver) return null;
 
+    
     GameObject container = Instantiate(
         containerPrefab,
         spawnPoint.position,
