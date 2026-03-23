@@ -417,6 +417,7 @@ MonoBehaviour:
   claw: {fileID: 576500614}
   grabber: {fileID: 576500615}
   coinSpawner: {fileID: 89899762}
+  gameplayMechanic: {fileID: 247765962}
 --- !u!1 &89899761
 GameObject:
   m_ObjectHideFlags: 0
@@ -448,7 +449,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::CoinSpawner
   coinPrefab: {fileID: 7306497575214351104, guid: d4b1f3c2e9804bb4fab686643b799759, type: 3}
   containersPerSpawn: 3
-  localOffset: {x: 0, y: -1.41, z: 0}
+  localOffset: {x: 1, y: 1.15, z: 0}
+  gameplayMechanic: {fileID: 247765962}
 --- !u!4 &89899763
 Transform:
   m_ObjectHideFlags: 0
@@ -1177,6 +1179,50 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 211185077}
   m_CullTransparentMesh: 1
+--- !u!1 &247765961
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 247765963}
+  - component: {fileID: 247765962}
+  m_Layer: 0
+  m_Name: StackTowerPlayMechanic
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &247765962
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 247765961}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0856c39d734046b42bbc550f521581ac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StackTowerGameplayMechanic
+--- !u!4 &247765963
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 247765961}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.8155, y: 1.24827, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &278069998
 GameObject:
   m_ObjectHideFlags: 0
@@ -2761,7 +2807,7 @@ SpriteRenderer:
   m_GlobalIlluminationMeshLod: 0
   m_SortingLayerID: 0
   m_SortingLayer: 0
-  m_SortingOrder: 15
+  m_SortingOrder: 50
   m_MaskInteraction: 0
   m_Sprite: {fileID: 6449776447089453623, guid: 2a8d13a7e8c255d49ba8adb555210def, type: 3}
   m_Color: {r: 1, g: 1, b: 1, a: 1}
@@ -4382,14 +4428,11 @@ MonoBehaviour:
   popupManager: {fileID: 942952989}
   infoPopUp: {fileID: 787428663}
   alertPopUp: {fileID: 1600081695}
-  congratsPopup: {fileID: 902465534}
+  gmeOverPopup: {fileID: 902465534}
   uIAnimationManagerGameplay: {fileID: 942952991}
   loadingUI: {fileID: 339505130}
   sceneName: MainMenu
   gamePlayManager: {fileID: 945800902}
-  isGuideImageVisibleSprite: {fileID: 563271522853937370, guid: 4a07475c7068eaa4787d1b7225b6c6a0, type: 3}
-  isGuideImageHiddenSprite: {fileID: -4660788063953423507, guid: 1cb32762ef06b334b9b25b4a230d49c2, type: 3}
-  guideImageButton: {fileID: 736091382}
   coinsCounterContainer: {fileID: 1824064628}
   levelConfigUrl: https://justudios.co/test-verygana/tile-puzzle/config/branding.json
   gameplaySceneName: Game
@@ -4417,6 +4460,7 @@ MonoBehaviour:
   loadingContainer: {fileID: 339505129}
   popEase: 27
   exitEase: 26
+  popupOverlayController: {fileID: 796876866}
 --- !u!1 &945800901
 GameObject:
   m_ObjectHideFlags: 0
@@ -4447,10 +4491,10 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::GamePlayManager
   gameClock: {fileID: 774292123}
-  gameplayMechanicBehaviour: {fileID: 0}
-  uiTransitionDuration: 0.6
-  celebrationDuration: 1
+  gameplayMechanicBehaviour: {fileID: 247765962}
   gameplayRewardHandlerBehaviour: {fileID: 2051649616}
+  celebrationDuration: 1
+  uiTransitionDuration: 0.6
 --- !u!4 &945800903
 Transform:
   m_ObjectHideFlags: 0
@@ -5151,50 +5195,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1181658798}
   m_CullTransparentMesh: 1
---- !u!1 &1199090054
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 1199090056}
-  - component: {fileID: 1199090055}
-  m_Layer: 0
-  m_Name: GameManagerStackTower
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &1199090055
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1199090054}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 406107b4380373a488094817f83684fc, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: Assembly-CSharp::GameManagerStackTower
---- !u!4 &1199090056
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1199090054}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: 2.8155, y: 1.24827, z: 0}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1215244669
 GameObject:
   m_ObjectHideFlags: 0
@@ -7989,13 +7989,11 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CoinGameplayRewardHandler
   coinRewardSpawner: {fileID: 1745532270}
-  completionRewardAnchorBehaviour: {fileID: 0}
-  coinsRewardedPerAction: 2
-  visualCoinsAction: 2
+  coinsRewardedPerAction: 1
+  visualCoinsAction: 1
   actionRewardRadius: 0.3
-  coinsRewardedCompleted: 20
-  visualCoinsComplete: 10
-  completedRewardRadius: 2.5
+  visualCoinsComplete: 0
+  completedRewardRadius: 0
 --- !u!4 &2051649617
 Transform:
   m_ObjectHideFlags: 0
@@ -8651,4 +8649,4 @@ SceneRoots:
   - {fileID: 538663772}
   - {fileID: 89899763}
   - {fileID: 366490237}
-  - {fileID: 1199090056}
+  - {fileID: 247765963}

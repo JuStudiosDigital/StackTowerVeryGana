@@ -1757,10 +1757,10 @@ RectTransform:
   - {fileID: 1518689918}
   - {fileID: 1320644524}
   - {fileID: 1372492607}
-  - {fileID: 1539401229}
   - {fileID: 1352681786}
   - {fileID: 82436808}
   - {fileID: 821183556}
+  - {fileID: 1539401229}
   - {fileID: 1766959881}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
@@ -2216,7 +2216,7 @@ MonoBehaviour:
   audioManager: {fileID: 1189883614}
   currencyManager: {fileID: 1189883613}
   isOnlineModeEnabled: 0
-  GameID: tile_puzzle
+  GameTitle: tile_puzzle
 --- !u!4 &1189883616
 Transform:
   m_ObjectHideFlags: 0
@@ -3564,7 +3564,7 @@ MonoBehaviour:
   exitEase: 26
   logoIdleScale: 1.05
   logoIdleDuration: 1.4
-  fakeLoadDuration: 2.5
+  popupOverlayController: {fileID: 821183553}
 --- !u!4 &1845320718
 Transform:
   m_ObjectHideFlags: 0

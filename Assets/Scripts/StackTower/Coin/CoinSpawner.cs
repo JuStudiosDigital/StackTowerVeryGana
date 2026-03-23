@@ -14,6 +14,7 @@ public class CoinSpawner : MonoBehaviour
     [Header("Posición relativa")]
     [SerializeField] private Vector3 localOffset = new Vector3(0f, 1.5f, 0f);
 
+    [SerializeField] private StackTowerGameplayMechanic gameplayMechanic;
     private int containerCounter = 0;
 
     /// <summary>
@@ -21,7 +22,8 @@ public class CoinSpawner : MonoBehaviour
     /// </summary>
     public void OnContainerSpawned(Container container)
     {
-        if (GameManagerStackTower.IsGameOver) return;
+        if (gameplayMechanic != null && gameplayMechanic.IsGameOver)
+        return;
 
         containerCounter++;
 
@@ -39,7 +41,10 @@ public class CoinSpawner : MonoBehaviour
             Debug.LogWarning("CoinSpawner: coinPrefab no asignado");
             return;
         }
-
+        if (Random.Range(0, 1) == 0)
+        {
+            localOffset = Vector3.Scale( new Vector3(-1f,1f,1f) , localOffset);
+        }
         Vector3 worldPosition = container.transform.position + localOffset;
 
         GameObject coin = Instantiate(

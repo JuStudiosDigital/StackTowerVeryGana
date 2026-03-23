@@ -12,7 +12,8 @@ public class Coin : MonoBehaviour
         if (!other.TryGetComponent<Container>(out _))
             return;
 
-        CoinEvents.TriggerCoinCollected();
+        // ✅ Enviar posición real
+        StackTowerEvents.RaiseCoinCollected(transform.position);
 
         Destroy(gameObject);
     }

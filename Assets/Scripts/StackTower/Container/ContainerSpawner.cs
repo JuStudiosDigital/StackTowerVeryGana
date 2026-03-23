@@ -17,6 +17,7 @@ public class ContainerSpawner : MonoBehaviour
 
     [SerializeField] private CoinSpawner coinSpawner;
 
+    [SerializeField] private StackTowerGameplayMechanic gameplayMechanic;
     private bool firstSpawnDone = false;
 
     private void OnEnable()
@@ -58,7 +59,9 @@ public class ContainerSpawner : MonoBehaviour
     /// </summary>
     public GameObject Spawn()
     {
-        if (GameManagerStackTower.IsGameOver) return null;
+        // Referencia al mechanic (inyectada)
+        if (gameplayMechanic != null && gameplayMechanic.IsGameOver)
+        return null;
 
         return SpawnInternal();
     }

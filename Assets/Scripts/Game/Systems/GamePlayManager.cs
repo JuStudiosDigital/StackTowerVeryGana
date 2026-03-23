@@ -266,15 +266,15 @@ public sealed class GamePlayManager : MonoBehaviour
     /// </summary>
     private int ResolveDistanceSafe()
     {
-        var flappy = gameplayMechanicBehaviour as FlappyGameplayMechanic;
+        var stack = gameplayMechanicBehaviour as StackTowerGameplayMechanic;
 
-        if (flappy == null)
+        if (stack == null)
         {
-            DevLog.Warning("GamePlayManager: No se pudo obtener distancia (FlappyGameplayMechanic no encontrado).");
-            return 0;
+             DevLog.Warning("GamePlayManager: No se pudo obtener score (StackTowerGameplayMechanic no encontrado).");
+              return 0;
         }
 
-        return flappy.GetPlayerDistance();
+        return stack.GetScore();
     }
 
     #endregion

@@ -18,10 +18,14 @@ public class Container : MonoBehaviour
     /// Notifica la primera colisión del contenedor.
     /// </summary>
     public void NotifyFirstCollision()
-    {
-        if (hasCollided) return;
+{
+    if (hasCollided) return;
 
-        hasCollided = true;
-        OnFirstCollision?.Invoke(this);
-    }
+    hasCollided = true;
+
+    OnFirstCollision?.Invoke(this);
+
+    // 🔥 NUEVO
+    StackTowerEvents.RaiseContainerPlaced();
+}
 }

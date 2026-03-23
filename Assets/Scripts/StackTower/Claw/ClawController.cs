@@ -49,13 +49,13 @@ public class ClawController : MonoBehaviour
 
     private void OnEnable()
     {
-        GameManagerStackTower.OnGameOver += HandleGameOver;
+        StackTowerEvents.OnGameOver += HandleGameOver;
         ClawInput.OnPress += HandlePress;
     }
 
     private void OnDisable()
     {
-        GameManagerStackTower.OnGameOver -= HandleGameOver;
+        StackTowerEvents.OnGameOver -= HandleGameOver;
         ClawInput.OnPress -= HandlePress;
     }
 

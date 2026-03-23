@@ -18,7 +18,7 @@ public class ContainerCollision : MonoBehaviour
         // 🔴 Game Over si toca el mar (usando tag por pragmatismo)
         if (collision.gameObject.CompareTag("Sea"))
         {
-            GameManagerStackTower.TriggerGameOver();
+            StackTowerEvents.RaiseGameOver();
             return;
         }
 
