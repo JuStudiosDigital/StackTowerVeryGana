@@ -4,8 +4,12 @@ using System.Collections;
 
 public class ClawController : MonoBehaviour
 {
+    [Header("Velocidad progresiva")]
+    [SerializeField] private float startSpeed = 4f;
+    [SerializeField] private float maxSpeed = 10f;
+    [SerializeField] private float acceleration = 0.5f;
+
     [Header("Movimiento automático")]
-    [SerializeField] private float speed = 5f;
     [SerializeField] private float minX = -6f;
     [SerializeField] private float maxX = 6f;
 
@@ -14,47 +18,61 @@ public class ClawController : MonoBehaviour
     [SerializeField] private float exitOffset = 3f;
 
     [Header("Posición de reinicio")]
-    [SerializeField] private float returnX = -8f; // 👈 configurable desde inspector
+    [SerializeField] private float returnX = -8f;
 
     [Header("Referencia")]
     [SerializeField] private ClawGrabber grabber;
     [SerializeField] private ContainerSpawner spawner;
-      [Header("Animator")]
-        [SerializeField] private Animator clawAnimator;
+
+    [Header("Animator")]
+    [SerializeField] private Animator clawAnimator;
+
+    private float currentSpeed;
+
     private bool isActive = false;
     private bool isHolding = false;
     private bool isExiting = false;
     private bool isGameOver = false;
     private int direction = 1;
 
-private void OnEnable()
-{
-    GameManagerStackTower.OnGameOver += HandleGameOver;
-}
-
-private void OnDisable()
-{
-    GameManagerStackTower.OnGameOver -= HandleGameOver;
-}
-    private void Update()
-{
-    if (isGameOver) return; // 🔴 clave
-    if (isExiting) return;
-
-    HandleInput();
-
-    if (isActive)
+    private void Start()
     {
-        AutoMove();
+        currentSpeed = startSpeed;
     }
-}
+
+    private void OnEnable()
+    {
+        GameManagerStackTower.OnGameOver += HandleGameOver;
+    }
+
+    private void OnDisable()
+    {
+        GameManagerStackTower.OnGameOver -= HandleGameOver;
+    }
+
+    private void Update()
+    {
+        if (isGameOver) return;
+        if (isExiting) return;
+
+        HandleInput();
+
+        if (isActive)
+        {
+            // 🔥 velocidad progresiva
+            currentSpeed += acceleration * Time.deltaTime;
+            currentSpeed = Mathf.Min(currentSpeed, maxSpeed);
+
+            AutoMove();
+        }
+    }
 
     // 🔹 Movimiento horizontal automático
     private void AutoMove()
     {
         Vector3 pos = transform.position;
 
-        pos.x += direction * speed * Time.deltaTime;
+        pos.x += direction * currentSpeed * Time.deltaTime;
 
         if (pos.x >= maxX)
         {
@@ -70,14 +88,14 @@ private void OnDisable()
         transform.position = pos;
     }
 
-    // 🔹 Input (click / espacio / touch)
+    // 🔹 Input
     private void HandleInput()
     {
         bool pressed = false;
 
         if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
             pressed = true;
-          
+
         if (Keyboard.current != null)
         {
             if (Keyboard.current.spaceKey.wasPressedThisFrame ||
@@ -100,8 +118,11 @@ private void OnDisable()
         else if (isHolding)
         {
             isHolding = false;
+
+            // 🎬 animación de soltar
             clawAnimator.SetTrigger("open");
-            Invoke("ReleaseContainer",0.2f);
+
+            Invoke(nameof(ReleaseContainer), 0.2f);
         }
     }
 
@@ -123,61 +144,59 @@ private void OnDisable()
         isExiting = true;
 
         float exitTargetX = maxX + exitOffset;
-        float returnStartX = returnX; // 👈 configurable
 
-        // 👉 1. Salir hacia la derecha
+        // 👉 salir hacia la derecha
         while (transform.position.x < exitTargetX)
         {
             transform.position += Vector3.right * exitSpeed * Time.deltaTime;
             yield return null;
         }
 
-        // 👉 2. Spawn nuevo container
+        // 🎬 animación de agarrar
         clawAnimator.SetTrigger("hold");
+
+        // 👉 spawn
         GameObject newContainer = spawner.Spawn();
 
-        // 👉 3. Forzar agarre
+        // 👉 forzar agarre
         grabber.ForceGrab(newContainer);
 
-        // 👉 4. Teleport a posición definida
+        // 👉 teleport
         Vector3 pos = transform.position;
-        pos.x = returnStartX;
+        pos.x = returnX;
         transform.position = pos;
 
-        // 👉 5. Volver al rango normal
+        // 👉 volver al rango
         while (transform.position.x < minX)
         {
             transform.position += Vector3.right * exitSpeed * Time.deltaTime;
             yield return null;
         }
 
-        // 👉 6. Reset estado
         isExiting = false;
         isHolding = true;
     }
+
     private void HandleGameOver()
-{
-    isGameOver = true;
-
-    // detener interacción
-    isActive = false;
-    isHolding = false;
-
-    // iniciar salida final
-    StartCoroutine(ExitForeverRoutine());
-}
-private IEnumerator ExitForeverRoutine()
-{
-    isExiting = true;
-
-    float exitTargetX = maxX + exitOffset;
-
-    while (transform.position.x < exitTargetX)
     {
-        transform.position += Vector3.right * exitSpeed * Time.deltaTime;
-        yield return null;
+        isGameOver = true;
+
+        isActive = false;
+        isHolding = false;
+
+        StartCoroutine(ExitForeverRoutine());
     }
 
-    // 👉 aquí termina para siempre (no vuelve)
-}
+    private IEnumerator ExitForeverRoutine()
+    {
+        isExiting = true;
+
+        float exitTargetX = maxX + exitOffset;
+
+        while (transform.position.x < exitTargetX)
+        {
+            transform.position += Vector3.right * exitSpeed * Time.deltaTime;
+            yield return null;
+        }
+    }
 }

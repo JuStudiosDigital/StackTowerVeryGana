@@ -26,12 +26,7 @@ public class CameraStepper : MonoBehaviour
     {
         if (!isMoving)
         {
-            // 👉 Generar nubes ANTES de subir
-            if (cloudSystem != null)
-            {
-                cloudSystem.SpawnCloudsAbove(transform.position.y);
-            }
-
+            // ❌ YA NO SE LLAMA AL CLOUD SYSTEM
             StartCoroutine(MoveUpRoutine());
         }
     }
@@ -50,8 +45,6 @@ public class CameraStepper : MonoBehaviour
             time += Time.deltaTime;
 
             float t = time / moveDuration;
-
-            // 👉 SmoothStep para evitar movimiento brusco
             t = Mathf.SmoothStep(0f, 1f, t);
 
             transform.position = Vector3.Lerp(startPos, targetPos, t);
@@ -63,5 +56,4 @@ public class CameraStepper : MonoBehaviour
 
         isMoving = false;
     }
-    
 }

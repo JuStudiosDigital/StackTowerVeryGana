@@ -395,3 +395,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d7eab79f0d233c84e90a56bff72faeaa, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::Container
+  availableColors:
+  - {r: 0.9169811, g: 0.08131714, b: 0.08131714, a: 1}
+  - {r: 0.11667245, g: 0.90188676, b: 0.059558433, a: 1}
+  - {r: 0.13887496, g: 0.22891921, b: 0.8867924, a: 1}
+  renderers:
+  - {fileID: 746449594671352421}
+  - {fileID: 8259598508925715251}

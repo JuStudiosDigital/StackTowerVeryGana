@@ -26,7 +26,6 @@ public class CloudRandomSprite : MonoBehaviour
         spriteRenderer.sprite = sprites[index];
     }
 
-    // ✅ ESTE ES EL MÉTODO QUE TE FALTA
     public void RefreshSprite()
     {
         ApplyRandomSprite();
