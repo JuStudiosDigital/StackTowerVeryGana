@@ -104,6 +104,8 @@ public class UIAnimationManagerMainMenu : MonoBehaviour
 
     #endregion
 
+    [SerializeField] private PopupOverlayController popupOverlayController;
+
     #region Tween References
 
     /// <summary>
@@ -311,6 +313,8 @@ public class UIAnimationManagerMainMenu : MonoBehaviour
     private void ShowLoadingSlider()
     {
         if (loadingSlider == null) return;
+
+        popupOverlayController.Show();
 
         loadingSlider.gameObject.SetActive(true);
     }

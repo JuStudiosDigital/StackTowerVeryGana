@@ -47,6 +47,8 @@ public class PopupOverlayController : MonoBehaviour, IPointerClickHandler
     /// </summary>
     public System.Action OnOverlayClicked { get; set; }
 
+    public bool lockHiding { get; set; } = false;
+
     #endregion
 
     #region Unity Lifecycle
@@ -109,6 +111,10 @@ public class PopupOverlayController : MonoBehaviour, IPointerClickHandler
     /// </summary>
     public void Hide()
     {
+        if (lockHiding)
+        {
+            return;
+        }
         overlayImage.DOKill();
 
         overlayImage

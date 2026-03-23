@@ -13,11 +13,6 @@ public interface IGameplayRewardHandler
     void HandleActionReward(Vector3 worldPosition);
 
     /// <summary>
-    /// Recompensa asociada a la finalización del gameplay.
-    /// </summary>
-    void HandleCompletionReward();
-
-    /// <summary>
     /// Obtiene la cantidad total de recompensa acumulada.
     /// </summary>
     int GetTotalReward();

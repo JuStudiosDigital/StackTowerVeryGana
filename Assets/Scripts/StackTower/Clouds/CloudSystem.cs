@@ -1,13 +1,17 @@
 using UnityEngine;
 using System.Collections.Generic;
 
+/// <summary>
+/// Sistema de nubes con reciclaje horizontal y vertical.
+/// Optimizado para evitar instanciación constante.
+/// </summary>
 public class CloudSystem : MonoBehaviour
 {
     [Header("Prefab")]
     [SerializeField] private GameObject cloudPrefab;
 
     [Header("Referencia cámara")]
-    [SerializeField] private Transform cameraTransform;
+    [SerializeField] private Camera targetCamera;
 
     [Header("Cantidad inicial")]
     [SerializeField] private int initialClouds = 12;
@@ -37,15 +41,18 @@ public class CloudSystem : MonoBehaviour
     [Header("Spawn seguro (fuera de cámara)")]
     [SerializeField] private float safeSpawnOffset = 2f;
 
-    private class CloudData
+    /// <summary>
+    /// Datos internos de cada nube.
+    /// </summary>
+    private struct CloudData
     {
         public Transform transform;
         public float minY;
         public float maxY;
 
-        public CloudData(Transform t, float minY, float maxY)
+        public CloudData(Transform transform, float minY, float maxY)
         {
-            transform = t;
+            this.transform = transform;
             this.minY = minY;
             this.maxY = maxY;
         }
@@ -54,6 +61,12 @@ public class CloudSystem : MonoBehaviour
     private readonly List<CloudData> clouds = new();
 
     private float lastSpawnedY;
+
+    private void Awake()
+    {
+        if (targetCamera == null)
+            targetCamera = Camera.main;
+    }
 
     private void Start()
     {
@@ -67,7 +80,9 @@ public class CloudSystem : MonoBehaviour
         HandleVerticalRecycling();
     }
 
-    // 🔹 Inicializa pool (solo una vez)
+    /// <summary>
+    /// Inicializa el pool de nubes.
+    /// </summary>
     private void InitializePool()
     {
         for (int i = 0; i < initialClouds; i++)
@@ -84,13 +99,16 @@ public class CloudSystem : MonoBehaviour
         }
     }
 
-    // 🔹 Movimiento horizontal infinito
+    /// <summary>
+    /// Movimiento horizontal continuo.
+    /// </summary>
     private void MoveClouds()
     {
         float movement = moveSpeed * Time.deltaTime;
 
-        foreach (var cloudData in clouds)
+        for (int i = 0; i < clouds.Count; i++)
         {
+            var cloudData = clouds[i];
             var cloud = cloudData.transform;
 
             cloud.position += Vector3.left * movement;
@@ -99,11 +117,7 @@ public class CloudSystem : MonoBehaviour
             {
                 float newY = Random.Range(cloudData.minY, cloudData.maxY);
 
-                cloud.position = new Vector3(
-                    maxX,
-                    newY,
-                    cloud.position.z
-                );
+                cloud.position = new Vector3(maxX, newY, cloud.position.z);
 
                 ApplyRandomScale(cloud);
                 ApplyRandomSprite(cloud);
@@ -111,7 +125,9 @@ public class CloudSystem : MonoBehaviour
         }
     }
 
-    // 🔹 Control vertical automático
+    /// <summary>
+    /// Controla reciclaje vertical según la cámara.
+    /// </summary>
     private void HandleVerticalRecycling()
     {
         if (GetCameraTop() > lastSpawnedY - dynamicHeight)
@@ -120,7 +136,9 @@ public class CloudSystem : MonoBehaviour
         }
     }
 
-    // 🔥 RECICLAJE CORRECTO (NUNCA EN CÁMARA)
+    /// <summary>
+    /// Recicla nubes fuera de pantalla hacia arriba.
+    /// </summary>
     private void RecycleCloudsAbove()
     {
         float cameraTop = GetCameraTop();
@@ -131,9 +149,10 @@ public class CloudSystem : MonoBehaviour
 
         int recycled = 0;
 
-        foreach (var cloudData in clouds)
+        for (int i = 0; i < clouds.Count; i++)
         {
-            // 🔻 Solo si está completamente fuera por abajo
+            var cloudData = clouds[i];
+
             if (cloudData.transform.position.y < cameraBottom - recycleOffset)
             {
                 float newY = Random.Range(spawnMinY, spawnMaxY);
@@ -150,6 +169,8 @@ public class CloudSystem : MonoBehaviour
                 ApplyRandomScale(cloudData.transform);
                 ApplyRandomSprite(cloudData.transform);
 
+                clouds[i] = cloudData;
+
                 recycled++;
 
                 if (recycled >= cloudsPerBatch)
@@ -160,20 +181,16 @@ public class CloudSystem : MonoBehaviour
         lastSpawnedY = spawnMaxY;
     }
 
-    // 🔹 Cámara límites
     private float GetCameraTop()
     {
-        Camera cam = Camera.main;
-        return cam.transform.position.y + cam.orthographicSize;
+        return targetCamera.transform.position.y + targetCamera.orthographicSize;
     }
 
     private float GetCameraBottom()
     {
-        Camera cam = Camera.main;
-        return cam.transform.position.y - cam.orthographicSize;
+        return targetCamera.transform.position.y - targetCamera.orthographicSize;
     }
 
-    // 🔹 Setup inicial
     private void SetupCloud(GameObject cloud, float minY, float maxY)
     {
         Transform t = cloud.transform;

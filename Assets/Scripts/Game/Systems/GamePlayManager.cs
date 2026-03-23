@@ -3,137 +3,106 @@ using DG.Tweening;
 using UnityEngine;
 
 /// <summary>
-/// Gestiona el flujo principal del gameplay.
-/// Coordina la animación de entrada y salida del tablero,
-/// la inicialización de la mecánica activa,
-/// el control del reloj, las recompensas
-/// y la comunicación con la capa de UI.
+/// Orquestador principal del gameplay.
+/// 
+/// Responsable de:
+/// - Inicializar la mecánica activa
+/// - Gestionar el ciclo de vida de la partida
+/// - Controlar el reloj del juego
+/// - Coordinar recompensas
+/// - Emitir el resultado final hacia la UI
+/// 
+/// No contiene lógica de UI ni rendering.
 /// </summary>
-public class GamePlayManager : MonoBehaviour
+public sealed class GamePlayManager : MonoBehaviour
 {
+    #region Constants
 
     /// <summary>
-    /// Clave lógica del sonido al colocar una ficha.
+    /// Clave lógica del sonido de recolección.
     /// </summary>
     private const string CoinSoundKey = "CoinSound";
 
-    /// <summary>
-    /// Clave lógica del sonido de victoria.
-    /// </summary>
-    private const string VictorySoundKey = "VictorySound";
-
-    #region Serialized References - Game Systems
-
-    /// <summary>
-    /// Reloj del juego encargado de medir, pausar
-    /// y controlar el tiempo total de la partida.
-    /// </summary>
-    [Header("Game Systems")]
-    [Tooltip("Referencia al sistema de reloj del gameplay.")]
-    [SerializeField] private GameClock gameClock;
-
     #endregion
 
-    #region Serialized References - Gameplay Mechanic
+    #region Serialized References - Core Systems
 
-    /// <summary>
-    /// Componente base que implementa la mecánica
-    /// principal del gameplay (puzzle, runner, etc.).
-    /// </summary>
+    [Header("Core Systems")]
+
+    [Tooltip("Sistema encargado de medir y controlar el tiempo de la partida.")]
+    [SerializeField] private GameClock gameClock;
+
     [Tooltip("Componente que implementa la mecánica principal del gameplay.")]
     [SerializeField] private MonoBehaviour gameplayMechanicBehaviour;
 
-    /// <summary>
-    /// Mecánica principal activa del gameplay.
-    /// </summary>
-    private IGameplayMechanic gameplayMechanic;
-
-    /// <summary>
-    /// Mecánica opcional que soporta imagen guía.
-    /// </summary>
-    private IGuideImageMechanic guideImageMechanic;
-
-    /// <summary>
-    /// Fuente opcional de recompensas por acciones del jugador.
-    /// </summary>
-    private IPieceRewardSource pieceRewardSource;
-
-    /// <summary>
-    /// Proveedor de la posición para la recompensa final.
-    /// </summary>
-    private ICompletionRewardAnchor completionRewardAnchor;
-
-    /// <summary>
-    /// Cantidad total de movimientos realizados
-    /// durante la partida actual.
-    /// </summary>
-    public int TotalMoves { get; private set; }
+    [Tooltip("Componente encargado de procesar y acumular recompensas.")]
+    [SerializeField] private MonoBehaviour gameplayRewardHandlerBehaviour;
 
     #endregion
 
-    #region Serialized References - UI Events
+    #region Serialized Configuration
 
-    /// <summary>
-    /// Evento emitido cuando el gameplay solicita
-    /// la animación de entrada de la UI.
-    /// El parámetro representa la duración de la transición.
-    /// </summary>
-    public event Action<float> GameplayEnterRequested;
+    [Header("Configuration")]
 
-    /// <summary>
-    /// Evento emitido cuando el gameplay solicita
-    /// la animación de salida de la UI.
-    /// El parámetro representa la duración de la transición.
-    /// </summary>
-    public event Action<float> GameplayExitRequested;
+    [Tooltip("Duración en segundos antes de finalizar el gameplay tras completarse.")]
+    [SerializeField] private float celebrationDuration = 2f;
 
-    /// <summary>
-    /// Evento emitido cuando el gameplay finaliza
-    /// entregando los resultados de la partida.
-    /// </summary>
-    public event Action<GameResultData> GameplayCompleted;
-
-    /// <summary>
-    /// Duración estándar de las transiciones de UI.
-    /// </summary>
-    [Tooltip("Duración en segundos de las animaciones de transición de la UI.")]
+    [Tooltip("Duración de transición de entrada solicitada a la UI.")]
     [SerializeField] private float uiTransitionDuration = 0.6f;
 
     #endregion
 
-    #region Serialized References - Celebration & Rewards
+    #region Interfaces (Resolved at Runtime)
+
     /// <summary>
-    /// Duración de la celebración antes de cerrar el gameplay.
+    /// Mecánica activa del gameplay.
     /// </summary>
-    [Tooltip("Tiempo en segundos que se espera antes de cerrar el gameplay tras completarlo.")]
-    [SerializeField] private float celebrationDuration = 2f;
-    [Tooltip("Componente que implementa la lógica de recompensas del gameplay.")]
-    [SerializeField] private MonoBehaviour gameplayRewardHandlerBehaviour;
+    private IGameplayMechanic gameplayMechanic;
+
+    /// <summary>
+    /// Fuente de eventos de recompensa por acción.
+    /// </summary>
+    private IPieceRewardSource pieceRewardSource;
+
+    /// <summary>
+    /// Handler encargado de acumular recompensas.
+    /// </summary>
     private IGameplayRewardHandler gameplayRewardHandler;
+
+    #endregion
+
+    #region Events
+
+    /// <summary>
+    /// Evento solicitado a la UI para animación de entrada.
+    /// </summary>
+    public event Action<float> GameplayEnterRequested;
+
+    /// <summary>
+    /// Evento emitido al finalizar la partida con resultados.
+    /// </summary>
+    public event Action<GameResultData> GameplayCompleted;
+
     #endregion
 
     #region Private State
 
     /// <summary>
-    /// Indica si el gameplay ya está
-    /// en proceso de salida.
-    /// </summary>
-    private bool isExiting;
-
-    /// <summary>
-    /// Referencia al tween utilizado para la celebración.
-    /// Se almacena para poder cancelarlo si el objeto es destruido
-    /// antes de que finalice su ejecución.
+    /// Tween utilizado para el delay de finalización.
     /// </summary>
     private Tween celebrationTween;
+
+    /// <summary>
+    /// Indica si el gameplay ya finalizó (protección contra duplicados).
+    /// </summary>
+    private bool isCompleted;
 
     #endregion
 
     #region Unity Lifecycle
 
     /// <summary>
-    /// Resuelve las dependencias de interfaces
-    /// implementadas por la mecánica activa.
+    /// Resuelve dependencias de interfaces requeridas.
     /// </summary>
     private void Awake()
     {
@@ -141,45 +110,32 @@ public class GamePlayManager : MonoBehaviour
 
         if (gameplayMechanic == null)
         {
-            DevLog.Error(
-                "GamePlayManager requiere un componente que implemente IGameplayMechanic."
-            );
+            DevLog.Error("GamePlayManager: El componente asignado no implementa IGameplayMechanic.");
         }
 
-        guideImageMechanic = gameplayMechanicBehaviour as IGuideImageMechanic;
         pieceRewardSource = gameplayMechanicBehaviour as IPieceRewardSource;
-        completionRewardAnchor = gameplayMechanicBehaviour as ICompletionRewardAnchor;
-    
-        gameplayRewardHandler =
-        gameplayRewardHandlerBehaviour as IGameplayRewardHandler;
+
+        gameplayRewardHandler = gameplayRewardHandlerBehaviour as IGameplayRewardHandler;
 
         if (gameplayRewardHandler == null)
         {
-            DevLog.Warning(
-                "No se asignó un IGameplayRewardHandler. El gameplay no otorgará recompensas."
-            );
+            DevLog.Warning("GamePlayManager: No se asignó un IGameplayRewardHandler.");
         }
     }
 
     /// <summary>
-    /// Inicia el gameplay ejecutando la animación
-    /// de entrada y arrancando la mecánica activa.
+    /// Inicializa el gameplay y solicita animación de entrada.
     /// </summary>
     private void Start()
     {
         GameplayEnterRequested?.Invoke(uiTransitionDuration);
 
-        gameplayMechanic.PlayEnterAnimation(() =>
-        {
-            gameplayMechanic.StartMechanic();
-            InitializeClock();
-        });
+        gameplayMechanic?.StartMechanic();
+        InitializeClock();
     }
 
-     /// <summary>
-    /// Asegura la cancelación de tweens activos asociados
-    /// a este objeto para evitar callbacks tardíos
-    /// después de su destrucción.
+    /// <summary>
+    /// Libera tweens activos para evitar callbacks inválidos.
     /// </summary>
     private void OnDestroy()
     {
@@ -191,208 +147,146 @@ public class GamePlayManager : MonoBehaviour
     #region Event Binding
 
     /// <summary>
-    /// Vincula los eventos de la mecánica activa
-    /// con la lógica del gameplay.
+    /// Suscribe eventos de la mecánica activa.
     /// </summary>
     private void OnEnable()
     {
         if (gameplayMechanic == null)
             return;
 
-        gameplayMechanic.OnPlayerAction += RegisterPlayerMove;
         gameplayMechanic.OnMechanicCompleted += OnMechanicCompleted;
 
-        if (pieceRewardSource != null && gameplayRewardHandler != null)
-        {
-            pieceRewardSource.PieceRewardTriggered +=
-                gameplayRewardHandler.HandleActionReward;
-        }
         if (pieceRewardSource != null)
         {
             pieceRewardSource.PieceRewardTriggered += PlayPieceRewardSound;
+
+            if (gameplayRewardHandler != null)
+            {
+                pieceRewardSource.PieceRewardTriggered +=
+                    gameplayRewardHandler.HandleActionReward;
+            }
         }
     }
 
     /// <summary>
-    /// Desvincula los eventos de la mecánica activa
-    /// para evitar fugas de memoria.
+    /// Desuscribe eventos para evitar fugas de memoria.
     /// </summary>
     private void OnDisable()
     {
         if (gameplayMechanic == null)
             return;
 
-        gameplayMechanic.OnPlayerAction -= RegisterPlayerMove;
         gameplayMechanic.OnMechanicCompleted -= OnMechanicCompleted;
 
-        if (pieceRewardSource != null && gameplayRewardHandler != null)
-        {
-            pieceRewardSource.PieceRewardTriggered -=
-                gameplayRewardHandler.HandleActionReward;
-        }
         if (pieceRewardSource != null)
         {
             pieceRewardSource.PieceRewardTriggered -= PlayPieceRewardSound;
-        }
 
+            if (gameplayRewardHandler != null)
+            {
+                pieceRewardSource.PieceRewardTriggered -=
+                    gameplayRewardHandler.HandleActionReward;
+            }
+        }
     }
 
     #endregion
 
-    #region Clock Management
+    #region Clock
 
     /// <summary>
-    /// Inicializa y arranca el reloj del gameplay
-    /// en modo normal.
+    /// Configura e inicia el reloj del gameplay.
     /// </summary>
     private void InitializeClock()
     {
+        if (gameClock == null)
+        {
+            DevLog.Error("GamePlayManager: GameClock no asignado.");
+            return;
+        }
+
         gameClock.SetNormalMode();
         gameClock.StartClock();
     }
 
     #endregion
 
-    #region Guide Image Control
+    #region Gameplay Flow
 
     /// <summary>
-    /// Alterna la visibilidad de la imagen guía
-    /// si la mecánica activa lo soporta.
-    /// </summary>
-    public void ToggleGuideImage()
-    {
-        if (guideImageMechanic == null)
-            return;
-
-        guideImageMechanic.ToggleGuideImage();
-    }
-
-    /// <summary>
-    /// Indica si la imagen guía está visible
-    /// cuando la mecánica activa lo soporta.
-    /// </summary>
-    public bool IsGuideImageVisible =>
-        guideImageMechanic != null && guideImageMechanic.IsGuideImageVisible;
-
-    #endregion
-
-    #region Gameplay Control
-
-    /// <summary>
-    /// Reinicia completamente el gameplay,
-    /// incluyendo la mecánica y el reloj.
-    /// </summary>
-    public void RestartGame()
-    {
-        gameplayMechanic.RestartMechanic();
-        InitializeClock();
-    }
-
-    #endregion
-
-    #region Gameplay Rewards
-
-    /// <summary>
-    /// Maneja la finalización de la mecánica activa.
+    /// Se ejecuta cuando la mecánica reporta finalización.
+    /// Controla el cierre del gameplay.
     /// </summary>
     private void OnMechanicCompleted()
     {
-        gameClock.PauseClock();
-        gameplayRewardHandler?.HandleCompletionReward();
-        PlayVictorySound();
+        if (isCompleted)
+            return;
+
+        isCompleted = true;
+
+        DevLog.Log("GamePlayManager: Gameplay completado.");
+
+        gameClock?.PauseClock();
+
+        // Delay de celebración antes de finalizar
         celebrationTween = DOVirtual.DelayedCall(celebrationDuration, CompleteGameplay)
             .SetTarget(this)
             .SetLink(gameObject, LinkBehaviour.KillOnDestroy);
     }
 
     /// <summary>
-    /// Registra un movimiento realizado por el jugador.
-    /// </summary>
-    private void RegisterPlayerMove()
-    {
-        TotalMoves++;
-    }
-
-    #endregion
-
-    #region Completion Flow
-
-    /// <summary>
-    /// Finaliza el gameplay y emite
-    /// los resultados finales.
+    /// Construye el resultado final y lo emite a la UI.
     /// </summary>
     private void CompleteGameplay()
     {
+        int distance = ResolveDistanceSafe();
+
+        int coins = gameplayRewardHandler != null
+            ? gameplayRewardHandler.GetTotalReward()
+            : 0;
+
         var resultData = new GameResultData(
-            gameClock.GetTimeString(),
-            TotalMoves,
-            gameplayRewardHandler != null
-                ? gameplayRewardHandler.GetTotalReward()
-                : 0
+            gameClock != null ? gameClock.GetTimeString() : "0",
+            distance,
+            coins
         );
+
+        DevLog.Log("GamePlayManager: Emitiendo GameplayCompleted.");
 
         GameplayCompleted?.Invoke(resultData);
     }
 
     #endregion
 
-    #region Exit Flow
+    #region Helpers
 
     /// <summary>
-    /// Inicia el flujo de salida del gameplay
-    /// evitando ejecuciones duplicadas.
+    /// Obtiene la distancia del jugador de forma segura.
+    /// Evita dependencias rígidas.
     /// </summary>
-    /// <param name="onComplete">Callback opcional al finalizar.</param>
-    public void ExitGameplay(Action onComplete = null)
+    private int ResolveDistanceSafe()
     {
-        DevLog.Log("GamePlayManager: ExitGameplay called.");
-        if (isExiting)
-            return;
+        var flappy = gameplayMechanicBehaviour as FlappyGameplayMechanic;
 
-        DevLog.Log("GamePlayManager: Starting exit flow.");
+        if (flappy == null)
+        {
+            DevLog.Warning("GamePlayManager: No se pudo obtener distancia (FlappyGameplayMechanic no encontrado).");
+            return 0;
+        }
 
-        isExiting = true;
-        HideGameplayVisuals(onComplete);
-    }
-
-    /// <summary>
-    /// Oculta los elementos visuales del gameplay
-    /// ejecutando las animaciones de salida.
-    /// </summary>
-    /// <param name="onComplete">Callback opcional al finalizar.</param>
-    public void HideGameplayVisuals(Action onComplete = null)
-    {
-        DevLog.Log("GamePlayManager: Hiding gameplay visuals.");
-        GameplayExitRequested?.Invoke(uiTransitionDuration);
-        DevLog.Log("GamePlayManager: Requested UI exit animation.");
-        gameplayMechanic.PlayExitAnimation(onComplete);
+        return flappy.GetPlayerDistance();
     }
 
     #endregion
 
-    #region Audio Handling
+    #region Audio
+
     /// <summary>
-    /// Reproduce el sonido asociado a la recompensa por ficha.
+    /// Reproduce el sonido asociado a la obtención de recompensa.
     /// </summary>
     private void PlayPieceRewardSound(Vector3 _)
     {
-        DevLog.Log("Playing piece reward sound.");
-        AudioClip clip =
-            ResourceService.Instance?.GetAudioClip(CoinSoundKey);
-        DevLog.Log($"Retrieved clip: {clip}");
-        if (clip == null)
-            return;
-
-        GameManager.Instance?.AudioManager?.Play(clip);
-    }
-    /// <summary>
-    /// Reproduce el sonido de victoria del nivel.
-    /// </summary>
-    private void PlayVictorySound()
-    {
-        DevLog.Log("Playing victory sound.");
-        AudioClip clip =
-            ResourceService.Instance?.GetAudioClip(VictorySoundKey);
+        AudioClip clip = ResourceService.Instance?.GetAudioClip(CoinSoundKey);
 
         if (clip == null)
             return;
@@ -401,5 +295,4 @@ public class GamePlayManager : MonoBehaviour
     }
 
     #endregion
-
 }

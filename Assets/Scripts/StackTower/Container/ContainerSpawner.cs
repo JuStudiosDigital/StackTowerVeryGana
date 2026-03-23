@@ -1,14 +1,23 @@
 using UnityEngine;
 
+/// <summary>
+/// Se encarga de generar containers y notificar sistemas dependientes.
+/// </summary>
 public class ContainerSpawner : MonoBehaviour
 {
+    [Header("Referencias")]
+
     [SerializeField] private GameObject containerPrefab;
+
     [SerializeField] private Transform spawnPoint;
+
     [SerializeField] private ClawController claw;
 
-    //Sistema de monedas 
+    [SerializeField] private ClawGrabber grabber;
+
     [SerializeField] private CoinSpawner coinSpawner;
 
+    private bool firstSpawnDone = false;
 
     private void OnEnable()
     {
@@ -22,32 +31,56 @@ public class ContainerSpawner : MonoBehaviour
 
     private void Start()
     {
-        Spawn();
+        SpawnInitial();
+    }
+
+    /// <summary>
+    /// Genera el primer container ya agarrado por la garra.
+    /// </summary>
+    private void SpawnInitial()
+    {
+        GameObject container = SpawnInternal();
+
+        if (container == null) return;
+
+        grabber.ForceGrab(container);
+
+        firstSpawnDone = true;
     }
 
     private void HandleContainerCollision(Container container)
-{
-    claw.StartExitSequence();
-}
-
-    public GameObject Spawn()
-{
-    if (GameManagerStackTower.IsGameOver) return null;
-
-    
-    GameObject container = Instantiate(
-        containerPrefab,
-        spawnPoint.position,
-        Quaternion.identity
-    );
-
-    // 👉 avisar al CoinSpawner
-    if (coinSpawner != null)
     {
-        coinSpawner.OnContainerSpawned(container.GetComponent<Container>());
+        claw.StartExitSequence();
     }
 
-    return container;
-}
+    /// <summary>
+    /// Spawn estándar usado por la garra.
+    /// </summary>
+    public GameObject Spawn()
+    {
+        if (GameManagerStackTower.IsGameOver) return null;
 
+        return SpawnInternal();
+    }
+
+    /// <summary>
+    /// Lógica interna de spawn reutilizable.
+    /// </summary>
+    private GameObject SpawnInternal()
+    {
+        GameObject container = Instantiate(
+            containerPrefab,
+            spawnPoint.position,
+            Quaternion.identity
+        );
+
+        var containerComponent = container.GetComponent<Container>();
+
+        if (coinSpawner != null && containerComponent != null)
+        {
+            coinSpawner.OnContainerSpawned(containerComponent);
+        }
+
+        return container;
+    }
 }

@@ -31,7 +31,7 @@ public class UIGamePlayController : MonoBehaviour
     /// <summary>
     /// Popup de felicitaciones mostrado al completar el puzzle.
     /// </summary>
-    [SerializeField] private CongratsPopup congratsPopup;
+    [SerializeField] private CongratsPopup gmeOverPopup;
 
     /// <summary>
     /// Gestor de animaciones específicas de la UI durante el gameplay.
@@ -56,24 +56,10 @@ public class UIGamePlayController : MonoBehaviour
     [SerializeField] private GamePlayManager gamePlayManager;
 
     /// <summary>
-    /// Sprite utilizado cuando la imagen guía está visible.
-    /// </summary>
-    [SerializeField] private Sprite isGuideImageVisibleSprite;
-
-    /// <summary>
-    /// Sprite utilizado cuando la imagen guía está oculta.
-    /// </summary>
-    [SerializeField] private Sprite isGuideImageHiddenSprite;
-
-    /// <summary>
-    /// Imagen del botón que controla la visibilidad de la imagen guía.
-    /// </summary>
-    [SerializeField] private Image guideImageButton;
-
-    /// <summary>
-    /// Imagen del botón que controla la visibilidad de la imagen guía.
+    /// HUD de contador de monedas.
     /// </summary>
     [SerializeField] private GameObject coinsCounterContainer;
+
 
     #endregion
 
@@ -106,11 +92,10 @@ public class UIGamePlayController : MonoBehaviour
     /// </summary>
     private void OnEnable()
     {
-        congratsPopup.OnConfirmRequested += OnCongratsConfirmed;
+        gmeOverPopup.OnConfirmRequested += OnGameOverConfirmed;
 
-        gamePlayManager.GameplayCompleted += HandleGameplayCompleted;
+        gamePlayManager.GameplayCompleted += HandleGameplayCompleted;  
         gamePlayManager.GameplayEnterRequested += OnGameplayEnterRequested;
-        gamePlayManager.GameplayExitRequested += OnGameplayExitRequested;
     }
 
     /// <summary>
@@ -119,11 +104,10 @@ public class UIGamePlayController : MonoBehaviour
     /// </summary>
     private void OnDisable()
     {
-        congratsPopup.OnConfirmRequested -= OnCongratsConfirmed;
+        gmeOverPopup.OnConfirmRequested -= OnGameOverConfirmed;
 
         gamePlayManager.GameplayCompleted -= HandleGameplayCompleted;
         gamePlayManager.GameplayEnterRequested -= OnGameplayEnterRequested;
-        gamePlayManager.GameplayExitRequested -= OnGameplayExitRequested;
     }
 
     #endregion
@@ -149,28 +133,9 @@ public class UIGamePlayController : MonoBehaviour
     /// <summary>
     /// Abre el popup de felicitaciones.
     /// </summary>
-    public void OpenCongrats()
+    public void OpenGameOver()
     {
-        popupManager.OpenPopup(congratsPopup);
-    }
-
-    #endregion
-
-    #region Guide Image Controls
-
-    /// <summary>
-    /// Alterna la visibilidad de la imagen guía y actualiza
-    /// el sprite del botón según el estado actual.
-    /// </summary>
-    public void ShowHideGuideImage()
-    {
-        gamePlayManager.ToggleGuideImage();
-
-        bool isVisible = gamePlayManager.IsGuideImageVisible;
-
-        guideImageButton.sprite = isVisible
-            ? isGuideImageVisibleSprite
-            : isGuideImageHiddenSprite;
+        popupManager.OpenPopup(gmeOverPopup);
     }
 
     #endregion
@@ -178,19 +143,11 @@ public class UIGamePlayController : MonoBehaviour
     #region Gameplay Controls
 
     /// <summary>
-    /// Reinicia la partida actual desde el estado inicial.
-    /// </summary>
-    public void Replay()
-    {
-        gamePlayManager.RestartGame();
-    }
-
-    /// <summary>
     /// Inicia el flujo de salida del gameplay hacia el menú principal.
     /// </summary>
     public void BackToMainMenu()
     {
-        gamePlayManager.ExitGameplay(OnGameplayExitCompleted);
+        OnGameplayExitCompleted();
     }
 
     #endregion
@@ -256,9 +213,9 @@ public class UIGamePlayController : MonoBehaviour
     /// Reinicia el flujo de carga solicitando nueva data
     /// y recargando la escena de gameplay.
     /// </summary>
-    private void OnCongratsConfirmed()
+    private void OnGameOverConfirmed()
     {
-        DevLog.Log("UIGamePlayController: Congrats confirmed, reloading gameplay.");
+        DevLog.Log("UIGamePlayController: Gameover confirmed, reloading gameplay.");
         
         uIAnimationManagerGameplay.ShowLoading();
         StartCoroutine(RunReloadGameplayFlow());
@@ -271,23 +228,23 @@ public class UIGamePlayController : MonoBehaviour
     /// <summary>
     /// Configura los datos mostrados en el popup de felicitaciones.
     /// </summary>
-    public void SetupCongratsPopup(
+    public void SetupGameOverPopup(
         string message,
         string statOne,
         string statTwo,
         string statThree)
     {
-        congratsPopup.Setup(message, statOne, statTwo, statThree);
+        gmeOverPopup.Setup(message, statOne, statTwo, statThree);
     }
 
     /// <summary>
     /// Ejecuta el flujo de apertura del popup de felicitaciones,
     /// bloqueando la interacción de fondo.
     /// </summary>
-    public void ShowCongratsFlow()
+    public void ShowGameOverFlow()
     {
         popupManager.LockOverlay();
-        OpenCongrats();
+        OpenGameOver();
     }
 
     /// <summary>
@@ -296,24 +253,23 @@ public class UIGamePlayController : MonoBehaviour
     /// </summary>
     public void HandleGameplayCompleted(GameResultData result)
     {
+        DevLog.Log("UI: GameplayCompleted recibido");
+
         string victoryMessage = ResourceService.Instance.GetText(
             texts => texts.victory_phrase
         );
 
-        SetupCongratsPopup(
+        SetupGameOverPopup(
             victoryMessage,
             result.time,
-            result.totalMoves.ToString(),
+            result.Distance.ToString(),
             result.coinsCollected.ToString()
         );
 
         popupManager.LockOverlay();
-
-        gamePlayManager.ExitGameplay(() =>
-        {
-            OpenCongrats();
-        });
+        OpenGameOver(); 
     }
+
 
     #endregion
 
@@ -327,13 +283,6 @@ public class UIGamePlayController : MonoBehaviour
         uIAnimationManagerGameplay.PlayEntryAnimation(duration);
     }
 
-    /// <summary>
-    /// Maneja la solicitud de salida visual del gameplay.
-    /// </summary>
-    private void OnGameplayExitRequested(float duration)
-    {
-        uIAnimationManagerGameplay.PlayExitAnimation(exitDuration: duration);
-    }
 
     #endregion
 }

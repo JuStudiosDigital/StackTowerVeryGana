@@ -21,16 +21,6 @@ public class CoinGameplayRewardHandler : MonoBehaviour, IGameplayRewardHandler
     /// </summary>
     [SerializeField] private CoinRewardSpawner coinRewardSpawner;
 
-    /// <summary>
-    /// Componente opcional que actúa como ancla para la posición
-    /// de la recompensa de finalización.
-    /// 
-    /// Se serializa como <see cref="MonoBehaviour"/> para permitir
-    /// flexibilidad en el Inspector, pero debe implementar
-    /// <see cref="ICompletionRewardAnchor"/>.
-    /// </summary>
-    [SerializeField] private MonoBehaviour completionRewardAnchorBehaviour;
-
     #endregion
 
     #region Reward Configuration
@@ -61,10 +51,6 @@ public class CoinGameplayRewardHandler : MonoBehaviour, IGameplayRewardHandler
     /// </summary>
     [Header("Completion Reward")]
 
-    /// <summary>
-    /// Cantidad total de monedas lógicas otorgadas al completar.
-    /// </summary>
-    [SerializeField] private int coinsRewardedCompleted = 20;
 
     /// <summary>
     /// Cantidad de monedas visuales generadas al completar.
@@ -86,11 +72,7 @@ public class CoinGameplayRewardHandler : MonoBehaviour, IGameplayRewardHandler
     /// </summary>
     private int totalCoinsCollected;
 
-    /// <summary>
-    /// Referencia cacheada al ancla de recompensa de finalización,
-    /// utilizada para determinar la posición final de spawn.
-    /// </summary>
-    private ICompletionRewardAnchor completionRewardAnchor;
+
 
     #endregion
 
@@ -104,10 +86,7 @@ public class CoinGameplayRewardHandler : MonoBehaviour, IGameplayRewardHandler
     /// y flexibilidad de implementación.
     /// </summary>
     private void Awake()
-    {
-        completionRewardAnchor =
-            completionRewardAnchorBehaviour as ICompletionRewardAnchor;
-        
+    {        
         ResolveRewardConfiguration();
     }
 
@@ -126,10 +105,6 @@ public class CoinGameplayRewardHandler : MonoBehaviour, IGameplayRewardHandler
 
         coinsRewardedPerAction = ResourceService.Instance.GetReward(
             rewards => rewards.coins_per_action
-        );
-
-        coinsRewardedCompleted = ResourceService.Instance.GetReward(
-            rewards => rewards.coins_on_completion
         );
     }
 
@@ -156,27 +131,6 @@ public class CoinGameplayRewardHandler : MonoBehaviour, IGameplayRewardHandler
         );
 
         totalCoinsCollected += coinsRewardedPerAction;
-    }
-
-    /// <summary>
-    /// Maneja la recompensa de finalización del objetivo.
-    /// 
-    /// Si existe un ancla válida, genera las monedas visuales
-    /// en la posición definida y actualiza el total lógico.
-    /// </summary>
-    public void HandleCompletionReward()
-    {
-        if (completionRewardAnchor == null)
-            return;
-
-        coinRewardSpawner.SpawnCoins(
-            completionRewardAnchor.CompletionRewardPosition,
-            visualCoinsComplete,
-            coinsRewardedCompleted,
-            completedRewardRadius
-        );
-
-        totalCoinsCollected += coinsRewardedCompleted;
     }
 
     /// <summary>

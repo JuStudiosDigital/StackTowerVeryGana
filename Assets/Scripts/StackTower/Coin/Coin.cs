@@ -1,13 +1,19 @@
 using UnityEngine;
 
+/// <summary>
+/// Representa una moneda recolectable.
+/// Solo emite el evento de recolección.
+/// </summary>
+[RequireComponent(typeof(Collider2D))]
 public class Coin : MonoBehaviour
 {
-    private void OnCollisionEnter2D(Collision2D collision)
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        // 👉 detectar contenedores
-        if (collision.gameObject.CompareTag("Container"))
-        {
-            Destroy(gameObject);
-        }
+        if (!other.TryGetComponent<Container>(out _))
+            return;
+
+        CoinEvents.TriggerCoinCollected();
+
+        Destroy(gameObject);
     }
 }

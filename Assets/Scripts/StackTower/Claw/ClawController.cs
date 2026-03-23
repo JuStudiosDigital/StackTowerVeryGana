@@ -1,9 +1,21 @@
 using UnityEngine;
-using UnityEngine.InputSystem;
 using System.Collections;
 
+/// <summary>
+/// Controlador principal de la garra.
+/// Gestiona movimiento, input y flujo de gameplay.
+/// </summary>
 public class ClawController : MonoBehaviour
 {
+    private enum ClawState
+    {
+        Idle,
+        Moving,
+        Holding,
+        Exiting,
+        GameOver
+    }
+
     [Header("Velocidad progresiva")]
     [SerializeField] private float startSpeed = 4f;
     [SerializeField] private float maxSpeed = 10f;
@@ -20,20 +32,15 @@ public class ClawController : MonoBehaviour
     [Header("Posición de reinicio")]
     [SerializeField] private float returnX = -8f;
 
-    [Header("Referencia")]
+    [Header("Referencias")]
     [SerializeField] private ClawGrabber grabber;
     [SerializeField] private ContainerSpawner spawner;
-
-    [Header("Animator")]
     [SerializeField] private Animator clawAnimator;
 
     private float currentSpeed;
-
-    private bool isActive = false;
-    private bool isHolding = false;
-    private bool isExiting = false;
-    private bool isGameOver = false;
     private int direction = 1;
+
+    private ClawState currentState = ClawState.Idle;
 
     private void Start()
     {
@@ -43,23 +50,22 @@ public class ClawController : MonoBehaviour
     private void OnEnable()
     {
         GameManagerStackTower.OnGameOver += HandleGameOver;
+        ClawInput.OnPress += HandlePress;
     }
 
     private void OnDisable()
     {
         GameManagerStackTower.OnGameOver -= HandleGameOver;
+        ClawInput.OnPress -= HandlePress;
     }
 
     private void Update()
     {
-        if (isGameOver) return;
-        if (isExiting) return;
+        if (currentState == ClawState.GameOver) return;
+        if (currentState == ClawState.Exiting) return;
 
-        HandleInput();
-
-        if (isActive)
+        if (currentState == ClawState.Moving || currentState == ClawState.Holding)
         {
-            // 🔥 velocidad progresiva
             currentSpeed += acceleration * Time.deltaTime;
             currentSpeed = Mathf.Min(currentSpeed, maxSpeed);
 
@@ -67,7 +73,9 @@ public class ClawController : MonoBehaviour
         }
     }
 
-    // 🔹 Movimiento horizontal automático
+    /// <summary>
+    /// Movimiento horizontal automático.
+    /// </summary>
     private void AutoMove()
     {
         Vector3 pos = transform.position;
@@ -88,40 +96,24 @@ public class ClawController : MonoBehaviour
         transform.position = pos;
     }
 
-    // 🔹 Input
-    private void HandleInput()
+    /// <summary>
+    /// Manejo de input desacoplado.
+    /// </summary>
+    private void HandlePress()
     {
-        bool pressed = false;
+        if (currentState == ClawState.GameOver) return;
+        if (currentState == ClawState.Exiting) return;
 
-        if (Mouse.current != null && Mouse.current.leftButton.wasPressedThisFrame)
-            pressed = true;
-
-        if (Keyboard.current != null)
+        if (currentState == ClawState.Idle)
         {
-            if (Keyboard.current.spaceKey.wasPressedThisFrame ||
-                Keyboard.current.enterKey.wasPressedThisFrame)
-                pressed = true;
-        }
-
-        if (Touchscreen.current != null &&
-            Touchscreen.current.primaryTouch.press.wasPressedThisFrame)
-            pressed = true;
-
-        if (!pressed) return;
-
-        if (!isActive)
-        {
-            isActive = true;
-            isHolding = true;
+            currentState = ClawState.Holding;
             grabber.TryGrab();
         }
-        else if (isHolding)
+        else if (currentState == ClawState.Holding)
         {
-            isHolding = false;
+            currentState = ClawState.Moving;
 
-            // 🎬 animación de soltar
             clawAnimator.SetTrigger("open");
-
             Invoke(nameof(ReleaseContainer), 0.2f);
         }
     }
@@ -131,72 +123,58 @@ public class ClawController : MonoBehaviour
         grabber.Release();
     }
 
-    // 🔴 Llamado desde ContainerSpawner
+    /// <summary>
+    /// Inicia la secuencia de salida lateral.
+    /// </summary>
     public void StartExitSequence()
     {
-        if (isExiting) return;
+        if (currentState == ClawState.Exiting) return;
 
         StartCoroutine(ExitRoutine());
     }
 
     private IEnumerator ExitRoutine()
     {
-        isExiting = true;
+        currentState = ClawState.Exiting;
 
         float exitTargetX = maxX + exitOffset;
 
-        // 👉 salir hacia la derecha
         while (transform.position.x < exitTargetX)
         {
             transform.position += Vector3.right * exitSpeed * Time.deltaTime;
             yield return null;
         }
 
-        // 🎬 animación de agarrar
         clawAnimator.SetTrigger("hold");
 
-        // 👉 spawn
         GameObject newContainer = spawner.Spawn();
 
-        // 👉 forzar agarre
         grabber.ForceGrab(newContainer);
 
-        // 👉 teleport
         Vector3 pos = transform.position;
         pos.x = returnX;
         transform.position = pos;
 
-        // 👉 volver al rango
         while (transform.position.x < minX)
         {
             transform.position += Vector3.right * exitSpeed * Time.deltaTime;
             yield return null;
         }
 
-        isExiting = false;
-        isHolding = true;
+        currentState = ClawState.Holding;
     }
 
+    /// <summary>
+    /// Detiene completamente la garra en su posición actual al hacer Game Over.
+    /// </summary>
     private void HandleGameOver()
     {
-        isGameOver = true;
+        currentState = ClawState.GameOver;
 
-        isActive = false;
-        isHolding = false;
+        // 🔴 Detener cualquier movimiento activo (coroutines)
+        StopAllCoroutines();
 
-        StartCoroutine(ExitForeverRoutine());
-    }
-
-    private IEnumerator ExitForeverRoutine()
-    {
-        isExiting = true;
-
-        float exitTargetX = maxX + exitOffset;
-
-        while (transform.position.x < exitTargetX)
-        {
-            transform.position += Vector3.right * exitSpeed * Time.deltaTime;
-            yield return null;
-        }
+        // 🔴 Detener aceleración
+        currentSpeed = 0f;
     }
 }

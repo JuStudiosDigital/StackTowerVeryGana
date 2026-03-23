@@ -16,7 +16,7 @@ public struct GameResultData
     /// <summary>
     /// Número total de movimientos realizados durante la partida.
     /// </summary>
-    public readonly int totalMoves;
+    public readonly int Distance;
 
     /// <summary>
     /// Cantidad total de monedas recolectadas durante la partida.
@@ -31,12 +31,12 @@ public struct GameResultData
     /// Inicializa una nueva instancia de <see cref="GameResultData"/> con los resultados finales de la partida.
     /// </summary>
     /// <param name="time">Tiempo total de la partida en formato string.</param>
-    /// <param name="totalMoves">Cantidad total de movimientos realizados.</param>
+    /// <param name="distance">Cantidad total de movimientos realizados.</param>
     /// <param name="coinsCollected">Cantidad total de monedas recolectadas.</param>
-    public GameResultData(string time, int totalMoves, int coinsCollected)
+    public GameResultData(string time, int distance, int coinsCollected)
     {
         this.time = time;
-        this.totalMoves = totalMoves;
+        this.Distance = distance;
         this.coinsCollected = coinsCollected;
     }
 

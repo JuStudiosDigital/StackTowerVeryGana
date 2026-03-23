@@ -1,5 +1,8 @@
 using UnityEngine;
 
+/// <summary>
+/// Se encarga de generar monedas en función de los containers.
+/// </summary>
 public class CoinSpawner : MonoBehaviour
 {
     [Header("Referencia")]
@@ -13,7 +16,9 @@ public class CoinSpawner : MonoBehaviour
 
     private int containerCounter = 0;
 
-    // 👉 Este método lo llama ContainerSpawner al crear el container
+    /// <summary>
+    /// Llamado cuando se crea un container.
+    /// </summary>
     public void OnContainerSpawned(Container container)
     {
         if (GameManagerStackTower.IsGameOver) return;
@@ -43,7 +48,6 @@ public class CoinSpawner : MonoBehaviour
             Quaternion.identity
         );
 
-        // 🔗 se mueve con el container
         coin.transform.SetParent(container.transform);
     }
 }
