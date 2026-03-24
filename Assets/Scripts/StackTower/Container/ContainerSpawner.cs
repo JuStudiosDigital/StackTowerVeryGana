@@ -18,7 +18,6 @@ public class ContainerSpawner : MonoBehaviour
     [SerializeField] private CoinSpawner coinSpawner;
 
     [SerializeField] private StackTowerGameplayMechanic gameplayMechanic;
-    private bool firstSpawnDone = false;
 
     private void OnEnable()
     {
@@ -46,7 +45,6 @@ public class ContainerSpawner : MonoBehaviour
 
         grabber.ForceGrab(container);
 
-        firstSpawnDone = true;
     }
 
     private void HandleContainerCollision(Container container)

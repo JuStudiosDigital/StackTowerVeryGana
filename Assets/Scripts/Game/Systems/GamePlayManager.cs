@@ -83,6 +83,11 @@ public sealed class GamePlayManager : MonoBehaviour
     /// </summary>
     public event Action<GameResultData> GameplayCompleted;
 
+    /// <summary>
+    /// Evento emitido inmediatamente cuando el gameplay termina (sin delay).
+    /// </summary>
+    public event Action GameplayEnded;
+
     #endregion
 
     #region Private State
@@ -228,6 +233,8 @@ public sealed class GamePlayManager : MonoBehaviour
 
         gameClock?.PauseClock();
 
+        GameplayEnded?.Invoke();
+
         // Delay de celebración antes de finalizar
         celebrationTween = DOVirtual.DelayedCall(celebrationDuration, CompleteGameplay)
             .SetTarget(this)
@@ -270,8 +277,8 @@ public sealed class GamePlayManager : MonoBehaviour
 
         if (stack == null)
         {
-             DevLog.Warning("GamePlayManager: No se pudo obtener score (StackTowerGameplayMechanic no encontrado).");
-              return 0;
+            DevLog.Warning("GamePlayManager: No se pudo obtener distancia (FlappyGameplayMechanic no encontrado).");
+            return 0;
         }
 
         return stack.GetScore();

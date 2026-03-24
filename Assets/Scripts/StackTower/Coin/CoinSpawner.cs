@@ -22,6 +22,10 @@ public class CoinSpawner : MonoBehaviour
     /// </summary>
     public void OnContainerSpawned(Container container)
     {
+         if (!GameManager.Instance.IsAdsEnabled)
+        {
+            return;
+        }
         if (gameplayMechanic != null && gameplayMechanic.IsGameOver)
         return;
 

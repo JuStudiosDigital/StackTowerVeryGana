@@ -62,7 +62,7 @@ public class CoinRewardView : MonoBehaviour
     /// <summary>
     /// Transform de destino al que la moneda se desplaza (normalmente un elemento de UI).
     /// </summary>
-    private Transform target;
+    private Vector3 target;
 
     /// <summary>
     /// Valor de recompensa que representa esta moneda.
@@ -95,7 +95,7 @@ public class CoinRewardView : MonoBehaviour
     /// </summary>
     /// <param name="target">Transform objetivo en la UI.</param>
     /// <param name="rewardValue">Valor de la recompensa asociada.</param>
-    public void Initialize(Transform target, int rewardValue)
+    public void Initialize(Vector3 target, int rewardValue)
     {
         if (target == null)
         {
@@ -130,7 +130,7 @@ public class CoinRewardView : MonoBehaviour
         float delay = UnityEngine.Random.Range(minMoveDelay, maxMoveDelay);
 
         Vector3 startPosition = transform.position;
-        Vector3 endPosition = target.position;
+        Vector3 endPosition = target;
 
         Vector3 midPoint = Vector3.Lerp(startPosition, endPosition, 0.5f);
         midPoint.y += arcHeight;

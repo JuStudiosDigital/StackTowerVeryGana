@@ -93,7 +93,7 @@ public class UIGamePlayController : MonoBehaviour
     private void OnEnable()
     {
         gmeOverPopup.OnConfirmRequested += OnGameOverConfirmed;
-
+        gamePlayManager.GameplayEnded += OnGameplayEnded;
         gamePlayManager.GameplayCompleted += HandleGameplayCompleted;  
         gamePlayManager.GameplayEnterRequested += OnGameplayEnterRequested;
     }
@@ -105,7 +105,7 @@ public class UIGamePlayController : MonoBehaviour
     private void OnDisable()
     {
         gmeOverPopup.OnConfirmRequested -= OnGameOverConfirmed;
-
+        gamePlayManager.GameplayEnded -= OnGameplayEnded;
         gamePlayManager.GameplayCompleted -= HandleGameplayCompleted;
         gamePlayManager.GameplayEnterRequested -= OnGameplayEnterRequested;
     }
@@ -238,13 +238,14 @@ public class UIGamePlayController : MonoBehaviour
     }
 
     /// <summary>
-    /// Ejecuta el flujo de apertura del popup de felicitaciones,
-    /// bloqueando la interacción de fondo.
+    /// Se ejecuta inmediatamente cuando el jugador pierde.
+    /// Oculta la UI antes del popup.
     /// </summary>
-    public void ShowGameOverFlow()
+    private void OnGameplayEnded()
     {
-        popupManager.LockOverlay();
-        OpenGameOver();
+        DevLog.Log("UI: GameplayEnded recibido → ocultando UI");
+
+        hideUI();
     }
 
     /// <summary>
@@ -270,6 +271,13 @@ public class UIGamePlayController : MonoBehaviour
         OpenGameOver(); 
     }
 
+    /// <summary>
+    /// Oculta la UI del gameplay para mostrar el popup de felicitaciones.
+    /// </summary>
+    private void hideUI()
+    {
+        uIAnimationManagerGameplay.PlayExitAnimation();
+    }
 
     #endregion
 

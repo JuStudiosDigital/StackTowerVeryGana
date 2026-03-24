@@ -52,16 +52,6 @@ public class CoinGameplayRewardHandler : MonoBehaviour, IGameplayRewardHandler
     [Header("Completion Reward")]
 
 
-    /// <summary>
-    /// Cantidad de monedas visuales generadas al completar.
-    /// </summary>
-    [SerializeField] private int visualCoinsComplete = 10;
-
-    /// <summary>
-    /// Radio de dispersión de las monedas visuales de finalización.
-    /// </summary>
-    [SerializeField] private float completedRewardRadius = 2.5f;
-
     #endregion
 
     #region Private State

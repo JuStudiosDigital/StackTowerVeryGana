@@ -80,7 +80,7 @@ public class CoinRewardSpawner : MonoBehaviour
                 transform
             );
 
-            coin.Initialize(uiCoinTarget, distributedRewards[i]);
+            coin.Initialize(new Vector3(uiCoinTarget.position.x, uiCoinTarget.position.y+ 1.386f, 0f), distributedRewards[i]);
             coin.ReachedTarget += OnCoinReachedTarget;
         }
     }
