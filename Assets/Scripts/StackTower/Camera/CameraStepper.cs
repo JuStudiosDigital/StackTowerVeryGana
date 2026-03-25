@@ -1,36 +1,83 @@
 using UnityEngine;
 using System.Collections;
 
+/// <summary>
+/// Controla el desplazamiento vertical de la cámara en respuesta a eventos del gameplay.
+/// Implementa un movimiento escalonado suave basado en interpolación temporal.
+/// </summary>
 public class CameraStepper : MonoBehaviour
 {
+    #region Inspector
+
     [Header("Movimiento vertical")]
-    [SerializeField] private float stepHeight = 2.5f;
-    [SerializeField] private float moveDuration = 0.5f;
+
+    [SerializeField]
+    [Tooltip("Altura que la cámara asciende en cada paso.")]
+    private float stepHeight = 2.5f;
+
+    [SerializeField]
+    [Tooltip("Duración del desplazamiento vertical en segundos.")]
+    private float moveDuration = 0.5f;
 
     [Header("Sistema de nubes")]
-    [SerializeField] private CloudSystem cloudSystem;
 
+    [SerializeField]
+    [Tooltip("Referencia opcional al sistema de nubes para sincronización visual.")]
+    private CloudSystem cloudSystem;
+
+    #endregion
+
+    #region State
+
+    /// <summary>
+    /// Indica si la cámara se encuentra actualmente en movimiento.
+    /// Evita superposición de múltiples desplazamientos simultáneos.
+    /// </summary>
     private bool isMoving = false;
 
+    #endregion
+
+    #region Unity
+
+    /// <summary>
+    /// Suscribe el componente al evento de primera colisión de contenedores.
+    /// </summary>
     private void OnEnable()
     {
         Container.OnFirstCollision += HandleStep;
     }
 
+    /// <summary>
+    /// Desuscribe el componente del evento para prevenir referencias inválidas.
+    /// </summary>
     private void OnDisable()
     {
         Container.OnFirstCollision -= HandleStep;
     }
 
+    #endregion
+
+    #region Event Handlers
+
+    /// <summary>
+    /// Maneja el evento de colisión de un contenedor y desencadena el desplazamiento vertical.
+    /// </summary>
+    /// <param name="container">Contenedor que provocó el evento.</param>
     private void HandleStep(Container container)
     {
         if (!isMoving)
         {
-            // ❌ YA NO SE LLAMA AL CLOUD SYSTEM
             StartCoroutine(MoveUpRoutine());
         }
     }
 
+    #endregion
+
+    #region Movement
+
+    /// <summary>
+    /// Ejecuta el movimiento vertical interpolado de la cámara utilizando una curva suavizada.
+    /// </summary>
     private IEnumerator MoveUpRoutine()
     {
         isMoving = true;
@@ -56,4 +103,6 @@ public class CameraStepper : MonoBehaviour
 
         isMoving = false;
     }
+
+    #endregion
 }

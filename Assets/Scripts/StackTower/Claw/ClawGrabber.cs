@@ -1,39 +1,76 @@
 using UnityEngine;
 
 /// <summary>
-/// Se encarga de detectar, agarrar y soltar objetos.
+/// Gestiona la detección, sujeción y liberación de objetos interactuables.
+/// Controla el estado físico de los objetos agarrados y su vinculación al punto de agarre.
 /// </summary>
 public class ClawGrabber : MonoBehaviour
 {
+    #region Inspector
+
     [Header("Configuración de agarre")]
 
     [SerializeField]
-    [Tooltip("Punto donde se sujetan los objetos.")]
+    [Tooltip("Transform que define el punto exacto donde se posicionan los objetos agarrados.")]
     private Transform grabPoint;
 
     [SerializeField]
-    [Tooltip("Radio de detección para encontrar objetos agarrables.")]
+    [Tooltip("Radio de detección utilizado para identificar objetos agarrables cercanos.")]
     private float grabRadius = 0.8f;
 
     [SerializeField]
-    [Tooltip("Capas válidas para agarrar.")]
+    [Tooltip("Máscara de capas que define qué objetos pueden ser agarrados.")]
     private LayerMask grabbableLayer;
 
+    #endregion
+
+    #region State
+
+    /// <summary>
+    /// Referencia al Rigidbody2D actualmente agarrado.
+    /// </summary>
     private Rigidbody2D grabbedBody;
+
+    /// <summary>
+    /// Referencia al Transform del objeto actualmente agarrado.
+    /// </summary>
     private Transform grabbedTransform;
 
     /// <summary>
-    /// Indica si actualmente hay un objeto agarrado.
+    /// Indica si actualmente existe un objeto agarrado.
     /// </summary>
     public bool IsHolding => grabbedBody != null;
 
+    #endregion
+
+    #region Unity
+
+    /// <summary>
+    /// Inicializa el estado físico de los objetos agarrables al inicio de la escena.
+    /// </summary>
     private void Start()
     {
         InitializeGrabbables();
     }
 
     /// <summary>
-    /// Inicializa los objetos agarrables como Kinematic al inicio.
+    /// Dibuja una representación visual del área de detección en el editor.
+    /// </summary>
+    private void OnDrawGizmos()
+    {
+        if (grabPoint == null) return;
+
+        Gizmos.color = Color.yellow;
+        Gizmos.DrawWireSphere(grabPoint.position, grabRadius);
+    }
+
+    #endregion
+
+    #region Initialization
+
+    /// <summary>
+    /// Configura todos los objetos dentro de las capas válidas como Kinematic
+    /// para evitar interacción física antes de ser agarrados.
     /// </summary>
     private void InitializeGrabbables()
     {
@@ -48,8 +85,12 @@ public class ClawGrabber : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Public API
+
     /// <summary>
-    /// Intenta agarrar un objeto dentro del radio.
+    /// Intenta detectar y agarrar un objeto dentro del radio definido.
     /// </summary>
     public void TryGrab()
     {
@@ -67,8 +108,9 @@ public class ClawGrabber : MonoBehaviour
     }
 
     /// <summary>
-    /// Fuerza el agarre de un objeto específico.
+    /// Fuerza el agarre de un objeto específico, validando sus componentes requeridos.
     /// </summary>
+    /// <param name="obj">Objeto que será forzado a ser agarrado.</param>
     public void ForceGrab(GameObject obj)
     {
         if (obj == null)
@@ -87,7 +129,7 @@ public class ClawGrabber : MonoBehaviour
     }
 
     /// <summary>
-    /// Libera el objeto actualmente agarrado.
+    /// Libera el objeto actualmente agarrado, restaurando su comportamiento físico.
     /// </summary>
     public void Release()
     {
@@ -100,9 +142,15 @@ public class ClawGrabber : MonoBehaviour
         grabbedTransform = null;
     }
 
+    #endregion
+
+    #region Private Methods
+
     /// <summary>
-    /// Asocia un objeto al punto de agarre.
+    /// Asocia un objeto al punto de agarre y ajusta su estado físico para mantenerlo fijo.
     /// </summary>
+    /// <param name="rb">Rigidbody2D del objeto a sujetar.</param>
+    /// <param name="target">Transform del objeto a sujetar.</param>
     private void Attach(Rigidbody2D rb, Transform target)
     {
         grabbedBody = rb;
@@ -116,11 +164,5 @@ public class ClawGrabber : MonoBehaviour
         grabbedTransform.localPosition = Vector3.zero;
     }
 
-    private void OnDrawGizmos()
-    {
-        if (grabPoint == null) return;
-
-        Gizmos.color = Color.yellow;
-        Gizmos.DrawWireSphere(grabPoint.position, grabRadius);
-    }
+    #endregion
 }

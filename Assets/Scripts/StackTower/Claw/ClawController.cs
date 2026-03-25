@@ -3,10 +3,16 @@ using System.Collections;
 
 /// <summary>
 /// Controlador principal de la garra.
-/// Gestiona movimiento, input y flujo de gameplay.
+/// Gestiona el movimiento horizontal automático, la interacción mediante input
+/// y la transición entre estados del flujo de juego.
 /// </summary>
 public class ClawController : MonoBehaviour
 {
+    #region Types
+
+    /// <summary>
+    /// Define los estados posibles de la garra durante el ciclo de juego.
+    /// </summary>
     private enum ClawState
     {
         Idle,
@@ -16,49 +22,116 @@ public class ClawController : MonoBehaviour
         GameOver
     }
 
+    #endregion
+
+    #region Inspector
+
     [Header("Velocidad progresiva")]
-    [SerializeField] private float startSpeed = 4f;
-    [SerializeField] private float maxSpeed = 10f;
-    [SerializeField] private float acceleration = 0.5f;
+
+    [SerializeField]
+    [Tooltip("Velocidad inicial de desplazamiento horizontal de la garra.")]
+    private float startSpeed = 4f;
+
+    [SerializeField]
+    [Tooltip("Velocidad máxima que puede alcanzar la garra.")]
+    private float maxSpeed = 10f;
+
+    [SerializeField]
+    [Tooltip("Incremento de velocidad aplicado progresivamente en el tiempo.")]
+    private float acceleration = 0.5f;
 
     [Header("Movimiento automático")]
-    [SerializeField] private float minX = -6f;
-    [SerializeField] private float maxX = 6f;
+
+    [SerializeField]
+    [Tooltip("Límite mínimo en el eje X para el movimiento de la garra.")]
+    private float minX = -6f;
+
+    [SerializeField]
+    [Tooltip("Límite máximo en el eje X para el movimiento de la garra.")]
+    private float maxX = 6f;
 
     [Header("Salida lateral")]
-    [SerializeField] private float exitSpeed = 8f;
-    [SerializeField] private float exitOffset = 3f;
+
+    [SerializeField]
+    [Tooltip("Velocidad utilizada durante la secuencia de salida lateral.")]
+    private float exitSpeed = 8f;
+
+    [SerializeField]
+    [Tooltip("Distancia adicional fuera del límite horizontal antes de reiniciar la posición.")]
+    private float exitOffset = 3f;
 
     [Header("Posición de reinicio")]
-    [SerializeField] private float returnX = -8f;
+
+    [SerializeField]
+    [Tooltip("Posición en el eje X a la que se reposiciona la garra tras la salida lateral.")]
+    private float returnX = -8f;
 
     [Header("Referencias")]
-    [SerializeField] private ClawGrabber grabber;
-    [SerializeField] private ContainerSpawner spawner;
-    [SerializeField] private Animator clawAnimator;
 
+    [SerializeField]
+    [Tooltip("Componente encargado de gestionar el agarre y liberación de objetos.")]
+    private ClawGrabber grabber;
+
+    [SerializeField]
+    [Tooltip("Sistema responsable de generar nuevos contenedores.")]
+    private ContainerSpawner spawner;
+
+    [SerializeField]
+    [Tooltip("Animator utilizado para controlar las animaciones de la garra.")]
+    private Animator clawAnimator;
+
+    #endregion
+
+    #region State
+
+    /// <summary>
+    /// Velocidad actual de la garra.
+    /// </summary>
     private float currentSpeed;
+
+    /// <summary>
+    /// Dirección de movimiento horizontal (1 derecha, -1 izquierda).
+    /// </summary>
     private int direction = 1;
 
+    /// <summary>
+    /// Estado actual de la garra.
+    /// </summary>
     private ClawState currentState = ClawState.Idle;
 
+    #endregion
+
+    #region Unity
+
+    /// <summary>
+    /// Inicializa la velocidad base de la garra.
+    /// </summary>
     private void Start()
     {
         currentSpeed = startSpeed;
     }
 
+    /// <summary>
+    /// Suscribe los eventos necesarios para el control de input y estado global.
+    /// </summary>
     private void OnEnable()
     {
         StackTowerEvents.OnGameOver += HandleGameOver;
         ClawInput.OnPress += HandlePress;
     }
 
+    /// <summary>
+    /// Desuscribe los eventos para evitar referencias inválidas.
+    /// </summary>
     private void OnDisable()
     {
         StackTowerEvents.OnGameOver -= HandleGameOver;
         ClawInput.OnPress -= HandlePress;
     }
 
+    /// <summary>
+    /// Ejecuta la lógica de movimiento continuo de la garra según su estado actual.
+    /// </summary>
     private void Update()
     {
         if (currentState == ClawState.GameOver) return;
@@ -73,8 +146,13 @@ public class ClawController : MonoBehaviour
         }
     }
 
+    #endregion
+
+    #region Movement
+
     /// <summary>
-    /// Movimiento horizontal automático.
+    /// Aplica movimiento horizontal automático dentro de los límites definidos,
+    /// invirtiendo la dirección al alcanzar los extremos.
     /// </summary>
     private void AutoMove()
     {
@@ -96,8 +174,13 @@ public class ClawController : MonoBehaviour
         transform.position = pos;
     }
 
+    #endregion
+
+    #region Input
+
     /// <summary>
-    /// Manejo de input desacoplado.
+    /// Maneja la entrada del usuario para controlar el comportamiento de la garra
+    /// de forma desacoplada del sistema de input.
     /// </summary>
     private void HandlePress()
     {
@@ -118,13 +201,20 @@ public class ClawController : MonoBehaviour
         }
     }
 
+    /// <summary>
+    /// Libera el contenedor actualmente sujeto por la garra.
+    /// </summary>
     private void ReleaseContainer()
     {
         grabber.Release();
     }
 
+    #endregion
+
+    #region Flow
+
     /// <summary>
-    /// Inicia la secuencia de salida lateral.
+    /// Inicia la secuencia de salida lateral de la garra.
     /// </summary>
     public void StartExitSequence()
     {
@@ -133,6 +223,9 @@ public class ClawController : MonoBehaviour
         StartCoroutine(ExitRoutine());
     }
 
+    /// <summary>
+    /// Ejecuta la secuencia completa de salida, reposicionamiento y reentrada de la garra.
+    /// </summary>
     private IEnumerator ExitRoutine()
     {
         currentState = ClawState.Exiting;
@@ -164,17 +257,21 @@ public class ClawController : MonoBehaviour
         currentState = ClawState.Holding;
     }
 
+    #endregion
+
+    #region Handlers
+
     /// <summary>
-    /// Detiene completamente la garra en su posición actual al hacer Game Over.
+    /// Detiene completamente la garra al producirse un evento de fin de juego.
     /// </summary>
     private void HandleGameOver()
     {
         currentState = ClawState.GameOver;
 
-        // 🔴 Detener cualquier movimiento activo (coroutines)
         StopAllCoroutines();
 
-        // 🔴 Detener aceleración
         currentSpeed = 0f;
     }
+
+    #endregion
 }

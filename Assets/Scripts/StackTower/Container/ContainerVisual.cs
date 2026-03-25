@@ -1,25 +1,43 @@
 using UnityEngine;
 
 /// <summary>
-/// Controla la apariencia visual del contenedor.
+/// Gestiona la configuración visual del contenedor,
+/// aplicando variaciones de color a sus renderizadores asociados.
 /// </summary>
 public class ContainerVisual : MonoBehaviour
 {
+    #region Inspector
+
     [Header("Configuración de color")]
 
     [SerializeField]
-    [Tooltip("Colores disponibles para el contenedor.")]
+    [Tooltip("Lista de colores disponibles que pueden asignarse aleatoriamente al contenedor.")]
     private Color[] availableColors;
 
     [SerializeField]
-    [Tooltip("Renderers a los que se aplicará el color.")]
+    [Tooltip("Conjunto de SpriteRenderers a los que se aplicará el color seleccionado.")]
     private SpriteRenderer[] renderers;
 
+    #endregion
+
+    #region Unity
+
+    /// <summary>
+    /// Inicializa la apariencia visual del contenedor al momento de su creación.
+    /// </summary>
     private void Awake()
     {
         ApplyRandomColor();
     }
 
+    #endregion
+
+    #region Private Methods
+
+    /// <summary>
+    /// Selecciona un color aleatorio de la lista disponible y lo aplica a todos los renderizadores definidos.
+    /// Si no hay colores configurados, se registra una advertencia y no se realiza ninguna modificación.
+    /// </summary>
     private void ApplyRandomColor()
     {
         if (availableColors == null || availableColors.Length == 0)
@@ -37,4 +55,6 @@ public class ContainerVisual : MonoBehaviour
                 rend.color = selectedColor;
         }
     }
+
+    #endregion
 }

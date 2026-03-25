@@ -1,41 +1,73 @@
 using UnityEngine;
 
 /// <summary>
-/// Se encarga de generar containers y notificar sistemas dependientes.
+/// Responsable de la creación de contenedores y de la notificación a sistemas dependientes.
+/// Coordina la inicialización, el flujo de spawn y la integración con la garra y el sistema de monedas.
 /// </summary>
 public class ContainerSpawner : MonoBehaviour
 {
+    #region Inspector
+
     [Header("Referencias")]
 
-    [SerializeField] private GameObject containerPrefab;
+    [SerializeField]
+    [Tooltip("Prefab del contenedor que será instanciado.")]
+    private GameObject containerPrefab;
 
-    [SerializeField] private Transform spawnPoint;
+    [SerializeField]
+    [Tooltip("Punto en el mundo donde se generarán los contenedores.")]
+    private Transform spawnPoint;
 
-    [SerializeField] private ClawController claw;
+    [SerializeField]
+    [Tooltip("Referencia al controlador de la garra para coordinar su comportamiento.")]
+    private ClawController claw;
 
-    [SerializeField] private ClawGrabber grabber;
+    [SerializeField]
+    [Tooltip("Componente encargado de agarrar automáticamente el contenedor generado.")]
+    private ClawGrabber grabber;
 
-    [SerializeField] private CoinSpawner coinSpawner;
+    [SerializeField]
+    [Tooltip("Sistema encargado de generar monedas asociadas a los contenedores.")]
+    private CoinSpawner coinSpawner;
 
-    [SerializeField] private StackTowerGameplayMechanic gameplayMechanic;
+    [SerializeField]
+    [Tooltip("Referencia a la mecánica principal para validar el estado del juego.")]
+    private StackTowerGameplayMechanic gameplayMechanic;
 
+    #endregion
+
+    #region Unity
+
+    /// <summary>
+    /// Suscribe el sistema al evento de primera colisión de contenedores.
+    /// </summary>
     private void OnEnable()
     {
         Container.OnFirstCollision += HandleContainerCollision;
     }
 
+    /// <summary>
+    /// Desuscribe el sistema del evento para evitar referencias inválidas.
+    /// </summary>
     private void OnDisable()
     {
         Container.OnFirstCollision -= HandleContainerCollision;
     }
 
+    /// <summary>
+    /// Inicializa el flujo de juego generando el primer contenedor.
+    /// </summary>
     private void Start()
     {
         SpawnInitial();
     }
 
+    #endregion
+
+    #region Initialization
+
     /// <summary>
-    /// Genera el primer container ya agarrado por la garra.
+    /// Genera el primer contenedor y lo asigna inmediatamente a la garra.
     /// </summary>
     private void SpawnInitial()
     {
@@ -44,29 +76,46 @@ public class ContainerSpawner : MonoBehaviour
         if (container == null) return;
 
         grabber.ForceGrab(container);
-
     }
 
+    #endregion
+
+    #region Event Handlers
+
+    /// <summary>
+    /// Maneja la primera colisión de un contenedor, iniciando la secuencia de salida de la garra.
+    /// </summary>
+    /// <param name="container">Contenedor que ha colisionado.</param>
     private void HandleContainerCollision(Container container)
     {
         claw.StartExitSequence();
     }
 
+    #endregion
+
+    #region Public API
+
     /// <summary>
-    /// Spawn estándar usado por la garra.
+    /// Genera un contenedor si el estado del juego lo permite.
+    /// Método utilizado por la garra para solicitar nuevas piezas.
     /// </summary>
+    /// <returns>Instancia del contenedor generado o null si el juego ha terminado.</returns>
     public GameObject Spawn()
     {
-        // Referencia al mechanic (inyectada)
         if (gameplayMechanic != null && gameplayMechanic.IsGameOver)
-        return null;
+            return null;
 
         return SpawnInternal();
     }
 
+    #endregion
+
+    #region Private Methods
+
     /// <summary>
-    /// Lógica interna de spawn reutilizable.
+    /// Lógica interna de instanciación del contenedor y notificación a sistemas dependientes.
     /// </summary>
+    /// <returns>Instancia del contenedor creado.</returns>
     private GameObject SpawnInternal()
     {
         GameObject container = Instantiate(
@@ -84,4 +133,6 @@ public class ContainerSpawner : MonoBehaviour
 
         return container;
     }
+
+    #endregion
 }
