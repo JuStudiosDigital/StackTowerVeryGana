@@ -1,21 +1,18 @@
 using UnityEngine;
+using System.Collections;
 
 /// <summary>
-/// Gestiona la configuración visual del contenedor,
-/// aplicando variaciones de color a sus renderizadores asociados.
+/// Gestiona la apariencia visual del contenedor utilizando datos de branding.
+/// Garantiza aplicación incluso si el objeto ya estaba activo al iniciar.
 /// </summary>
 public class ContainerVisual : MonoBehaviour
 {
     #region Inspector
 
-    [Header("Configuración de color")]
+    [Header("Renderers")]
 
     [SerializeField]
-    [Tooltip("Lista de colores disponibles que pueden asignarse aleatoriamente al contenedor.")]
-    private Color[] availableColors;
-
-    [SerializeField]
-    [Tooltip("Conjunto de SpriteRenderers a los que se aplicará el color seleccionado.")]
+    [Tooltip("Renderizadores a los que se aplicará el color de branding.")]
     private SpriteRenderer[] renderers;
 
     #endregion
@@ -23,36 +20,62 @@ public class ContainerVisual : MonoBehaviour
     #region Unity
 
     /// <summary>
-    /// Inicializa la apariencia visual del contenedor al momento de su creación.
+    /// Intenta aplicar color al activarse.
     /// </summary>
-    private void Awake()
+    private void OnEnable()
     {
-        ApplyRandomColor();
+        TryApply();
+    }
+
+    /// <summary>
+    /// Asegura aplicación en objetos ya activos al inicio.
+    /// </summary>
+    private void Start()
+    {
+        StartCoroutine(ApplyWhenReady());
     }
 
     #endregion
 
-    #region Private Methods
+    #region Initialization
 
     /// <summary>
-    /// Selecciona un color aleatorio de la lista disponible y lo aplica a todos los renderizadores definidos.
-    /// Si no hay colores configurados, se registra una advertencia y no se realiza ninguna modificación.
+    /// Espera a que BrandingManager esté disponible antes de aplicar el color.
     /// </summary>
-    private void ApplyRandomColor()
+    private IEnumerator ApplyWhenReady()
     {
-        if (availableColors == null || availableColors.Length == 0)
-        {
-            Debug.LogWarning("ContainerVisual: No hay colores asignados.");
-            return;
-        }
+        while (BrandingManager.Instance == null)
+            yield return null;
 
-        int index = Random.Range(0, availableColors.Length);
-        Color selectedColor = availableColors[index];
+        ApplyBrandingColor();
+    }
+
+    #endregion
+
+    #region Core
+
+    /// <summary>
+    /// Intenta aplicar el color si el manager está disponible.
+    /// </summary>
+    private void TryApply()
+    {
+        if (BrandingManager.Instance == null)
+            return;
+
+        ApplyBrandingColor();
+    }
+
+    /// <summary>
+    /// Aplica un color aleatorio proveniente del BrandingManager.
+    /// </summary>
+    private void ApplyBrandingColor()
+    {
+        Color color = BrandingManager.Instance.GetRandomColor();
 
         foreach (var rend in renderers)
         {
             if (rend != null)
-                rend.color = selectedColor;
+                rend.color = color;
         }
     }
 

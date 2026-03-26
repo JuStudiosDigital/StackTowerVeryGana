@@ -2,7 +2,7 @@ using UnityEngine;
 
 /// <summary>
 /// Responsable de la creación de contenedores y de la notificación a sistemas dependientes.
-/// Coordina la inicialización, el flujo de spawn y la integración con la garra y el sistema de monedas.
+/// Coordina la inicialización, el flujo de spawn y la integración con la garra, monedas y branding.
 /// </summary>
 public class ContainerSpawner : MonoBehaviour
 {
@@ -113,7 +113,8 @@ public class ContainerSpawner : MonoBehaviour
     #region Private Methods
 
     /// <summary>
-    /// Lógica interna de instanciación del contenedor y notificación a sistemas dependientes.
+    /// Lógica interna de instanciación del contenedor.
+    /// Aplica branding visual y notifica a sistemas dependientes.
     /// </summary>
     /// <returns>Instancia del contenedor creado.</returns>
     private GameObject SpawnInternal()
