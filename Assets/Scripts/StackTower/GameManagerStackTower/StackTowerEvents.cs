@@ -43,6 +43,7 @@ public static class StackTowerEvents
     public static void RaiseGameOver()
     {
         OnGameOver?.Invoke();
+        GameManager.Instance.AudioManager?.Play( AudioTypeGame.EndStackTower);
     }
 
     /// <summary>

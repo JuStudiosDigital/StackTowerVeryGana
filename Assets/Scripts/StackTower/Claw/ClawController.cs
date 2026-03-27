@@ -207,6 +207,7 @@ public class ClawController : MonoBehaviour
     private void ReleaseContainer()
     {
         grabber.Release();
+        GameManager.Instance.AudioManager?.Play( AudioTypeGame.OpenClaw);
     }
 
     #endregion

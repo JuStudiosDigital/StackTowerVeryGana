@@ -88,7 +88,7 @@ public class ClawInput : MonoBehaviour
 
         if (Mouse.current == null && Touchscreen.current == null)
             return false;
-
+            
         Vector2 screenPosition = Vector2.zero;
 
         if (Mouse.current != null)
@@ -97,7 +97,7 @@ public class ClawInput : MonoBehaviour
         if (Touchscreen.current != null &&
             Touchscreen.current.primaryTouch.press.isPressed)
             screenPosition = Touchscreen.current.primaryTouch.position.ReadValue();
-
+            
         PointerEventData eventData = new PointerEventData(EventSystem.current)
         {
             position = screenPosition

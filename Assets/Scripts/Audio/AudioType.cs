@@ -9,5 +9,10 @@ public enum AudioTypeGame
     BackgroundMusic,
     HoverSound,
     CoinPerAction,
-    Victory
+    Victory,
+    
+    OpenClaw,
+
+    EndStackTower
+    
 }
