@@ -1,45 +1,60 @@
 using UnityEngine;
 
 /// <summary>
-/// Responsable de la creación de contenedores y de la notificación a sistemas dependientes.
-/// Coordina la inicialización, el flujo de spawn y la integración con la garra, monedas y branding.
+/// Responsable de la creación de contenedores y de la coordinación con sistemas dependientes.
 /// </summary>
 public class ContainerSpawner : MonoBehaviour
 {
     #region Inspector
 
-    [Header("Referencias")]
-
+    /// <summary>
+    /// Prefab del contenedor que será instanciado.
+    /// </summary>
     [SerializeField]
     [Tooltip("Prefab del contenedor que será instanciado.")]
     private GameObject containerPrefab;
 
+    /// <summary>
+    /// Punto en el mundo donde se generan los contenedores.
+    /// </summary>
     [SerializeField]
-    [Tooltip("Punto en el mundo donde se generarán los contenedores.")]
+    [Tooltip("Transform que define la posición de spawn de los contenedores.")]
     private Transform spawnPoint;
 
+    /// <summary>
+    /// Referencia al controlador de la garra.
+    /// </summary>
     [SerializeField]
-    [Tooltip("Referencia al controlador de la garra para coordinar su comportamiento.")]
+    [Tooltip("Controlador encargado del comportamiento de la garra.")]
     private ClawController claw;
 
+    /// <summary>
+    /// Sistema encargado del agarre de contenedores.
+    /// </summary>
     [SerializeField]
-    [Tooltip("Componente encargado de agarrar automáticamente el contenedor generado.")]
+    [Tooltip("Componente responsable de agarrar y soltar contenedores.")]
     private ClawGrabber grabber;
 
-    [SerializeField]
-    [Tooltip("Sistema encargado de generar monedas asociadas a los contenedores.")]
-    private CoinSpawner coinSpawner;
-
+    /// <summary>
+    /// Referencia a la mecánica principal del juego.
+    /// </summary>
     [SerializeField]
     [Tooltip("Referencia a la mecánica principal para validar el estado del juego.")]
     private StackTowerGameplayMechanic gameplayMechanic;
+
+    /// <summary>
+    /// Sistema encargado de generar monedas.
+    /// </summary>
+    [SerializeField]
+    [Tooltip("Sistema responsable de generar monedas al crear contenedores.")]
+    private CoinSpawner coinSpawner;
 
     #endregion
 
     #region Unity
 
     /// <summary>
-    /// Suscribe el sistema al evento de primera colisión de contenedores.
+    /// Suscribe el manejador al evento de primera colisión de contenedores.
     /// </summary>
     private void OnEnable()
     {
@@ -47,7 +62,7 @@ public class ContainerSpawner : MonoBehaviour
     }
 
     /// <summary>
-    /// Desuscribe el sistema del evento para evitar referencias inválidas.
+    /// Desuscribe el manejador del evento para evitar referencias inválidas.
     /// </summary>
     private void OnDisable()
     {
@@ -55,7 +70,7 @@ public class ContainerSpawner : MonoBehaviour
     }
 
     /// <summary>
-    /// Inicializa el flujo de juego generando el primer contenedor.
+    /// Inicializa el sistema generando el primer contenedor.
     /// </summary>
     private void Start()
     {
@@ -73,9 +88,8 @@ public class ContainerSpawner : MonoBehaviour
     {
         GameObject container = SpawnInternal();
 
-        if (container == null) return;
-
-        grabber.ForceGrab(container);
+        if (container != null)
+            grabber.ForceGrab(container);
     }
 
     #endregion
@@ -83,7 +97,7 @@ public class ContainerSpawner : MonoBehaviour
     #region Event Handlers
 
     /// <summary>
-    /// Maneja la primera colisión de un contenedor, iniciando la secuencia de salida de la garra.
+    /// Maneja la primera colisión de un contenedor.
     /// </summary>
     /// <param name="container">Contenedor que ha colisionado.</param>
     private void HandleContainerCollision(Container container)
@@ -97,7 +111,6 @@ public class ContainerSpawner : MonoBehaviour
 
     /// <summary>
     /// Genera un contenedor si el estado del juego lo permite.
-    /// Método utilizado por la garra para solicitar nuevas piezas.
     /// </summary>
     /// <returns>Instancia del contenedor generado o null si el juego ha terminado.</returns>
     public GameObject Spawn()
@@ -110,11 +123,10 @@ public class ContainerSpawner : MonoBehaviour
 
     #endregion
 
-    #region Private Methods
+    #region Core
 
     /// <summary>
-    /// Lógica interna de instanciación del contenedor.
-    /// Aplica branding visual y notifica a sistemas dependientes.
+    /// Instancia un contenedor y notifica al sistema de monedas.
     /// </summary>
     /// <returns>Instancia del contenedor creado.</returns>
     private GameObject SpawnInternal()

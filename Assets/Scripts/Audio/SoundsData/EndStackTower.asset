@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fad0937ad5d4c2b478e9be6989d4d503, type: 3}
   m_Name: EndStackTower
   m_EditorClassIdentifier: Assembly-CSharp::AudioClipData
-  audioType: 0
-  audioClip: {fileID: 0}
+  audioType: 8
+  audioClip: {fileID: 8300000, guid: 7dc39096cc8bec54796e192a070a4ce6, type: 3}
   volume: 1
   loop: 0

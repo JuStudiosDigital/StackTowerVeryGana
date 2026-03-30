@@ -2,17 +2,18 @@ using UnityEngine;
 using System.Collections;
 
 /// <summary>
-/// Gestiona la apariencia visual del contenedor utilizando datos de branding.
-/// Garantiza aplicación incluso si el objeto ya estaba activo al iniciar.
+/// Gestiona la aplicación del color de branding sobre los renderizadores del contenedor.
 /// </summary>
 public class ContainerVisual : MonoBehaviour
 {
     #region Inspector
 
+    /// <summary>
+    /// Renderizadores a los que se aplicará el color de branding.
+    /// </summary>
     [Header("Renderers")]
-
     [SerializeField]
-    [Tooltip("Renderizadores a los que se aplicará el color de branding.")]
+    [Tooltip("Lista de SpriteRenderer a los que se aplicará el color de branding.")]
     private SpriteRenderer[] renderers;
 
     #endregion
@@ -20,7 +21,7 @@ public class ContainerVisual : MonoBehaviour
     #region Unity
 
     /// <summary>
-    /// Intenta aplicar color al activarse.
+    /// Intenta aplicar el color al activarse el objeto.
     /// </summary>
     private void OnEnable()
     {
@@ -28,7 +29,7 @@ public class ContainerVisual : MonoBehaviour
     }
 
     /// <summary>
-    /// Asegura aplicación en objetos ya activos al inicio.
+    /// Inicia la rutina de aplicación cuando el sistema de branding esté disponible.
     /// </summary>
     private void Start()
     {
@@ -40,8 +41,9 @@ public class ContainerVisual : MonoBehaviour
     #region Initialization
 
     /// <summary>
-    /// Espera a que BrandingManager esté disponible antes de aplicar el color.
+    /// Espera hasta que BrandingManager esté disponible antes de aplicar el color.
     /// </summary>
+    /// <returns>Coroutine de espera.</returns>
     private IEnumerator ApplyWhenReady()
     {
         while (BrandingManager.Instance == null)
@@ -55,7 +57,7 @@ public class ContainerVisual : MonoBehaviour
     #region Core
 
     /// <summary>
-    /// Intenta aplicar el color si el manager está disponible.
+    /// Aplica el color si el sistema de branding está disponible.
     /// </summary>
     private void TryApply()
     {
@@ -66,7 +68,7 @@ public class ContainerVisual : MonoBehaviour
     }
 
     /// <summary>
-    /// Aplica un color aleatorio proveniente del BrandingManager.
+    /// Aplica un color aleatorio a todos los renderizadores configurados.
     /// </summary>
     private void ApplyBrandingColor()
     {

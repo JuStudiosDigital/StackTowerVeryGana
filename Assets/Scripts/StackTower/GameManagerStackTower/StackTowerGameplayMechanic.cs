@@ -2,9 +2,7 @@ using System;
 using UnityEngine;
 
 /// <summary>
-/// Implementa la mecánica principal del modo Stack Tower.
-/// Centraliza el estado del juego, el conteo de progreso y la reacción a eventos del sistema,
-/// actuando como punto de coordinación entre subsistemas desacoplados.
+/// Orquesta el estado y flujo principal del modo Stack Tower.
 /// </summary>
 public sealed class StackTowerGameplayMechanic : MonoBehaviour,
     IGameplayMechanic,
@@ -18,8 +16,7 @@ public sealed class StackTowerGameplayMechanic : MonoBehaviour,
     public event Action OnMechanicCompleted;
 
     /// <summary>
-    /// Evento que se dispara cuando se genera una recompensa asociada a una pieza.
-    /// Proporciona la posición en el mundo donde debe representarse.
+    /// Evento que se dispara cuando se genera una recompensa asociada a una moneda recolectada.
     /// </summary>
     public event Action<Vector3> PieceRewardTriggered;
 
@@ -28,7 +25,7 @@ public sealed class StackTowerGameplayMechanic : MonoBehaviour,
     #region Game State
 
     /// <summary>
-    /// Representa los estados posibles de la mecánica de juego.
+    /// Define los estados posibles de la mecánica.
     /// </summary>
     private enum GameState
     {
@@ -51,12 +48,12 @@ public sealed class StackTowerGameplayMechanic : MonoBehaviour,
     #region State
 
     /// <summary>
-    /// Cantidad de contenedores colocados correctamente durante la sesión actual.
+    /// Cantidad de contenedores colocados correctamente.
     /// </summary>
     private int placedContainers;
 
     /// <summary>
-    /// Indica si la mecánica ya ha finalizado para evitar múltiples ejecuciones del flujo de cierre.
+    /// Indica si la mecánica ya ha finalizado.
     /// </summary>
     private bool hasFinished;
 
@@ -65,7 +62,7 @@ public sealed class StackTowerGameplayMechanic : MonoBehaviour,
     #region Unity
 
     /// <summary>
-    /// Suscribe los manejadores a los eventos relevantes del sistema.
+    /// Suscribe los manejadores a los eventos del sistema.
     /// </summary>
     private void OnEnable()
     {
@@ -75,7 +72,7 @@ public sealed class StackTowerGameplayMechanic : MonoBehaviour,
     }
 
     /// <summary>
-    /// Desuscribe los manejadores para prevenir referencias inválidas.
+    /// Desuscribe los manejadores de los eventos del sistema.
     /// </summary>
     private void OnDisable()
     {
@@ -86,10 +83,10 @@ public sealed class StackTowerGameplayMechanic : MonoBehaviour,
 
     #endregion
 
-    #region Gameplay
+    #region Public API
 
     /// <summary>
-    /// Inicializa o reinicia la mecánica, estableciendo el estado inicial y limpiando contadores.
+    /// Inicializa o reinicia el estado de la mecánica.
     /// </summary>
     public void StartMechanic()
     {
@@ -99,9 +96,9 @@ public sealed class StackTowerGameplayMechanic : MonoBehaviour,
     }
 
     /// <summary>
-    /// Obtiene el puntaje actual basado en la cantidad de contenedores colocados.
+    /// Obtiene el puntaje actual basado en contenedores colocados.
     /// </summary>
-    /// <returns>Puntaje actual del jugador.</returns>
+    /// <returns>Puntaje actual.</returns>
     public int GetScore()
     {
         return placedContainers;
@@ -109,12 +106,13 @@ public sealed class StackTowerGameplayMechanic : MonoBehaviour,
 
     #endregion
 
-    #region Handlers
+    #region Event Handlers
 
     /// <summary>
-    /// Maneja el evento de colocación de contenedor incrementando el puntaje.
+    /// Incrementa el contador de contenedores colocados.
     /// </summary>
-    private void HandleContainerPlaced()
+    /// <param name="_">Contenedor que ha sido colocado.</param>
+    private void HandleContainerPlaced(Container _)
     {
         if (IsGameOver) return;
 
@@ -122,7 +120,7 @@ public sealed class StackTowerGameplayMechanic : MonoBehaviour,
     }
 
     /// <summary>
-    /// Maneja el evento de recolección de moneda y emite una recompensa asociada.
+    /// Propaga el evento de recolección de moneda.
     /// </summary>
     /// <param name="worldPos">Posición en el mundo donde ocurrió la recolección.</param>
     private void HandleCoinCollected(Vector3 worldPos)
@@ -133,7 +131,7 @@ public sealed class StackTowerGameplayMechanic : MonoBehaviour,
     }
 
     /// <summary>
-    /// Maneja la transición al estado de fin de juego y notifica la finalización de la mecánica.
+    /// Maneja la transición al estado de fin de juego.
     /// </summary>
     private void HandleGameOver()
     {

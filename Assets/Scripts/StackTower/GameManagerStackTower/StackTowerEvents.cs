@@ -3,7 +3,6 @@ using UnityEngine;
 
 /// <summary>
 /// Canal centralizado de eventos para el sistema Stack Tower.
-/// Permite la comunicación desacoplada entre distintos sistemas del juego.
 /// </summary>
 public static class StackTowerEvents
 {
@@ -12,16 +11,15 @@ public static class StackTowerEvents
     /// <summary>
     /// Evento que se dispara cuando un contenedor ha sido colocado correctamente.
     /// </summary>
-    public static event Action OnContainerPlaced;
+    public static event Action<Container> OnContainerPlaced;
 
     /// <summary>
-    /// Evento que se dispara cuando ocurre una condición de fin de juego.
+    /// Evento que se dispara cuando ocurre el fin de la partida.
     /// </summary>
     public static event Action OnGameOver;
 
     /// <summary>
     /// Evento que se dispara cuando una moneda es recolectada.
-    /// Proporciona la posición en el mundo donde ocurrió la recolección.
     /// </summary>
     public static event Action<Vector3> OnCoinCollected;
 
@@ -32,24 +30,25 @@ public static class StackTowerEvents
     /// <summary>
     /// Invoca el evento de contenedor colocado.
     /// </summary>
-    public static void RaiseContainerPlaced()
+    /// <param name="container">Contenedor que ha sido colocado.</param>
+    public static void RaiseContainerPlaced(Container container)
     {
-        OnContainerPlaced?.Invoke();
+        OnContainerPlaced?.Invoke(container);
     }
 
     /// <summary>
-    /// Invoca el evento de fin de juego.
+    /// Invoca el evento de fin de juego y reproduce el audio asociado.
     /// </summary>
     public static void RaiseGameOver()
     {
         OnGameOver?.Invoke();
-        GameManager.Instance.AudioManager?.Play( AudioTypeGame.EndStackTower);
+        GameManager.Instance.AudioManager?.Play(AudioTypeGame.EndStackTower);
     }
 
     /// <summary>
     /// Invoca el evento de recolección de moneda.
     /// </summary>
-    /// <param name="position">Posición en el mundo donde se recolectó la moneda.</param>
+    /// <param name="position">Posición en el mundo donde ocurrió la recolección.</param>
     public static void RaiseCoinCollected(Vector3 position)
     {
         OnCoinCollected?.Invoke(position);

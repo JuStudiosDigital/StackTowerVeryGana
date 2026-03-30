@@ -12,7 +12,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: fad0937ad5d4c2b478e9be6989d4d503, type: 3}
   m_Name: OpenClaw
   m_EditorClassIdentifier: Assembly-CSharp::AudioClipData
-  audioType: 0
-  audioClip: {fileID: 0}
+  audioType: 7
+  audioClip: {fileID: 8300000, guid: 72f75fe94a7b3a44eb640bf7e87c8229, type: 3}
   volume: 1
   loop: 0
