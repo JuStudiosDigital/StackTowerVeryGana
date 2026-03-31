@@ -2768,7 +2768,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   audioManager: {fileID: 1189883614}
   currencyManager: {fileID: 1189883613}
-  isOnlineModeEnabled: 0
   GameTitle: tile_puzzle
 --- !u!4 &1189883616
 Transform:
@@ -3076,6 +3075,51 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1372492606}
   m_CullTransparentMesh: 1
+--- !u!1 &1392105867
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1392105869}
+  - component: {fileID: 1392105868}
+  m_Layer: 0
+  m_Name: GameDataProvider
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1392105868
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1392105867}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 3de0554ac4b798a4eb374c5c2136c3f0, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::GameDataProvider
+  baseData: {fileID: 11400000, guid: 5e108b72f795b874fb35edfa9b01226d, type: 2}
+--- !u!4 &1392105869
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1392105867}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 2.77156, y: 4.40717, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1425501181
 GameObject:
   m_ObjectHideFlags: 0
@@ -3889,3 +3933,4 @@ SceneRoots:
   - {fileID: 837639824}
   - {fileID: 1189883616}
   - {fileID: 1029963390}
+  - {fileID: 1392105869}

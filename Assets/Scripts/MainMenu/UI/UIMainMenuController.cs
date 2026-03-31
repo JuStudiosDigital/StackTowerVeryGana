@@ -1,7 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-
+using System.Collections.Generic;
 /// <summary>
 /// Controlador principal del menú inicial del juego.
 /// Gestiona la apertura de popups, la selección de nivel
@@ -74,27 +74,59 @@ public class UIMainMenuController : MonoBehaviour
 
     #region Private Coroutines
 
-   /// <summary>
-    /// Ejecuta el flujo de carga de la escena de gameplay utilizando
-    /// una secuencia de pasos de carga desacoplados.
+    /// <summary>
+    /// Ejecuta el flujo de carga hacia gameplay:
+    /// - (Opcional) Descarga configuración remota si es branded
+    /// - Precarga recursos
+    /// - Carga escena
     /// </summary>
     private IEnumerator RunOpenSceneLoading()
     {
-        ILoadingStep[] loadingSteps =
+        bool useApi = false; // producción
+   
+        string postBody = null;
+   
+        if (useApi && GameManager.Instance.IsBrandedMode)
         {
-            new LevelRemoteConfigStep(levelConfigUrl),
-            new LevelResourcePreloadStep(),
-            new SceneLoadingStep(sceneName, 0f)
-        };
-    
+            var requestDto = new LevelConfigRequestDto
+            {
+                sessionToken = GameManager.Instance.SessionToken,
+                userHash = GameManager.Instance.UserHash,
+                isBrandedMode = GameManager.Instance.IsBrandedMode,
+                campaignId = GameManager.Instance.CampaignId,
+                gameTitle = GameManager.Instance.GameTitle
+            };
+   
+            postBody = JsonUtility.ToJson(requestDto);
+        }
+   
+        /// Construcción dinámica
+        List<ILoadingStep> steps = new List<ILoadingStep>();
+   
+        if (GameManager.Instance.IsBrandedMode)
+        {
+            steps.Add(new LevelRemoteConfigStep(levelConfigUrl, postBody));
+        }
+        else
+        {
+            DevLog.Log("[MenuFlow] Modo NO branded → usando fallback");
+   
+            GameDataProvider.Instance.Initialize();
+            GameManager.Instance.ConfigureAds(false);
+        }
+   
+        steps.Add(new LevelResourcePreloadStep());
+        steps.Add(new SceneLoadingStep(sceneName, 0f));
+   
         LoadingContext loadingContext =
-            new LoadingContext(loadingUI, loadingSteps.Length);
-    
-        foreach (ILoadingStep step in loadingSteps)
+            new LoadingContext(loadingUI, steps.Count);
+   
+        foreach (ILoadingStep step in steps)
         {
             yield return step.Execute(loadingContext);
         }
     }
+
 
     #endregion
 }

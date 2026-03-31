@@ -293,7 +293,14 @@ public sealed class GamePlayManager : MonoBehaviour
     /// </summary>
     private void PlayPieceRewardSound(Vector3 _)
     {
-        AudioClip clip = ResourceService.Instance?.GetAudioClip(CoinSoundKey);
+        var data = GameDataProvider.Instance;
+
+
+        if (data == null || !data.IsInitialized)
+            return;
+
+
+        AudioClip clip = data.Runtime.KeyWin;
 
         if (clip == null)
             return;

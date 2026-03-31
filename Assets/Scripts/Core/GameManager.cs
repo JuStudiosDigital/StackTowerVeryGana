@@ -31,16 +31,6 @@ public class GameManager : MonoBehaviour
     /// </summary>
     [SerializeField] private CurrencyManager currencyManager;
 
-    
-    /// <summary>
-    /// Indica si el juego puede acceder a recursos remotos.
-    /// Si es false, todo se carga exclusivamente desde local.
-    /// </summary>
-    public bool IsOnlineModeEnabled => isOnlineModeEnabled;
-
-    [SerializeField]
-    private bool isOnlineModeEnabled = false;
-
     /// <summary>
     /// Indica si el nivel permite mostrar publicidad.
     /// </summary>
@@ -194,6 +184,9 @@ public class GameManager : MonoBehaviour
 
     private void ParseBrandedMode(string value)
     {
+        IsBrandedMode = true;
+            return;
+        // TODO: Quitar para producción, solo para pruebas rápidas en editor sin parámetros
         if (string.IsNullOrEmpty(value))
         {
             IsBrandedMode = false;

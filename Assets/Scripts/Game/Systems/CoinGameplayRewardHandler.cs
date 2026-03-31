@@ -90,12 +90,13 @@ public class CoinGameplayRewardHandler : MonoBehaviour, IGameplayRewardHandler
     /// </summary>
     private void ResolveRewardConfiguration()
     {
-        if (ResourceService.Instance == null)
-            return;
+        var data = GameDataProvider.Instance;
 
-        coinsRewardedPerAction = ResourceService.Instance.GetReward(
-            rewards => rewards.coins_per_action
-        );
+
+        if (data == null || !data.IsInitialized)
+            return;
+        
+        coinsRewardedPerAction = data.Runtime.KeysPerAction;
     }
 
     #endregion

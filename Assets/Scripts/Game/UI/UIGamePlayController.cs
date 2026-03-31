@@ -1,6 +1,7 @@
 using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
+using System.Collections.Generic;
 
 /// <summary>
 /// Controlador principal de la interfaz de usuario durante el gameplay.
@@ -190,23 +191,60 @@ public class UIGamePlayController : MonoBehaviour
     /// - Precarga los recursos del nivel
     /// - Recarga la escena actual
     /// </summary>
+     /// <summary>
+    /// Ejecuta el flujo completo de recarga del gameplay:
+    /// - (Opcional) Descarga configuración remota si es branded
+    /// - Precarga los recursos del nivel
+    /// - Recarga la escena actual
+    /// </summary>
     private IEnumerator RunReloadGameplayFlow()
     {
-        ILoadingStep[] loadingSteps =
+        bool useApi = false; // producción
+   
+        string postBody = null;
+   
+        if (useApi && GameManager.Instance.IsBrandedMode)
         {
-            new LevelRemoteConfigStep(levelConfigUrl),
-            new LevelResourcePreloadStep(),
-            new SceneLoadingStep(gameplaySceneName, 0f)
-        };
-
+            var requestDto = new LevelConfigRequestDto
+            {
+                sessionToken = GameManager.Instance.SessionToken,
+                userHash = GameManager.Instance.UserHash,
+                isBrandedMode = GameManager.Instance.IsBrandedMode,
+                campaignId = GameManager.Instance.CampaignId,
+                gameTitle = GameManager.Instance.GameTitle
+            };
+   
+            postBody = JsonUtility.ToJson(requestDto);
+        }
+   
+        /// Construcción dinámica de pasos
+        List<ILoadingStep> steps = new List<ILoadingStep>();
+   
+        if (GameManager.Instance.IsBrandedMode)
+        {
+            steps.Add(new LevelRemoteConfigStep(levelConfigUrl, postBody));
+        }
+        else
+        {
+            DevLog.Log("[GameplayFlow] Modo NO branded → omitiendo carga remota");
+   
+            /// Importante: asegurar fallback explícito
+            GameDataProvider.Instance.Initialize();
+            GameManager.Instance.ConfigureAds(false);
+        }
+   
+        steps.Add(new LevelResourcePreloadStep());
+        steps.Add(new SceneLoadingStep(gameplaySceneName, 0f));
+   
         LoadingContext loadingContext =
-            new LoadingContext(loadingUI, loadingSteps.Length);
-
-        foreach (ILoadingStep step in loadingSteps)
+            new LoadingContext(loadingUI, steps.Count);
+   
+        foreach (ILoadingStep step in steps)
         {
             yield return step.Execute(loadingContext);
         }
     }
+
 
     /// <summary>
     /// Maneja la confirmación del popup de felicitaciones.
@@ -254,11 +292,19 @@ public class UIGamePlayController : MonoBehaviour
     /// </summary>
     public void HandleGameplayCompleted(GameResultData result)
     {
-        DevLog.Log("UI: GameplayCompleted recibido");
+        var data = GameDataProvider.Instance;
 
-        string victoryMessage = ResourceService.Instance.GetText(
-            texts => texts.victory_phrase
-        );
+
+        if (data == null || !data.IsInitialized)
+            return;
+
+
+        var messages = data.Runtime.VictoryMessages;
+
+
+        string victoryMessage = (messages != null && messages.Count > 0)
+            ? messages[Random.Range(0, messages.Count)]
+            : string.Empty;
 
         SetupGameOverPopup(
             victoryMessage,

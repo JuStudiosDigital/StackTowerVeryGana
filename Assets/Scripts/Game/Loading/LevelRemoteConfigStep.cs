@@ -3,63 +3,46 @@ using UnityEngine;
 
 /// <summary>
 /// Paso de carga encargado de obtener la configuración remota del nivel.
-/// Si la descarga falla, el sistema continúa utilizando configuración local.
+/// Si falla, el juego continúa con fallback local.
 /// </summary>
 public class LevelRemoteConfigStep : ILoadingStep
 {
     #region Fields
 
     private readonly string configUrl;
+    private readonly string postBody;
 
     #endregion
 
-    #region Constructors
+    #region Constructor
 
-    /// <summary>
-    /// Inicializa el paso con la URL del JSON remoto del nivel.
-    /// </summary>
-    /// <param name="configUrl">
-    /// URL desde la cual se intentará descargar la configuración del nivel.
-    /// </param>
-    public LevelRemoteConfigStep(string configUrl)
+    public LevelRemoteConfigStep(string configUrl, string postBody = null)
     {
         this.configUrl = configUrl;
+        this.postBody = postBody;
     }
 
     #endregion
 
-    #region ILoadingStep Implementation
+    #region Execute
 
-    /// <summary>
-    /// Ejecuta la descarga del JSON remoto del nivel y reporta
-    /// el progreso local de forma normalizada.
-    /// </summary>
-    /// <param name="context">
-    /// Contexto compartido del sistema de carga.
-    /// </param>
     public IEnumerator Execute(LoadingContext context)
     {
+        DevLog.Log($"[LevelRemoteConfigStep] Iniciando carga remota desde: {configUrl}");
         context.ReportStepProgress(0f);
 
-        ILevelConfigProvider provider;
+        var provider = GameDataProvider.Instance;
 
-        #if UNITY_EDITOR
-        /// En editor, se puede usar un proveedor directo de URL para facilitar pruebas.
-        provider = new DirectUrlLevelConfigProvider(configUrl);
-        #else
-        /// En builds, se recomienda usar un servicio cloud que envíe un payload base
-        /// con datos de sesión y reciba la configuración final, permitiendo personalización
-        provider = new CloudServiceLevelConfigProvider(configUrl);
-        #endif
-        
-        IEnumerator loadRoutine =
-            ResourceService.Instance.LoadLevelConfigAsync(provider);
-
-        while (loadRoutine.MoveNext())
+        if (provider == null)
         {
-            context.ReportStepProgress(0.5f);
-            yield return loadRoutine.Current;
+            Debug.LogError("[LevelRemoteConfigStep] GameDataProvider no encontrado");
+            context.CompleteStep();
+            yield break;
         }
+
+        var loader = new GameDataLoader();
+
+        yield return loader.Load(provider, configUrl, postBody);
 
         context.ReportStepProgress(1f);
         context.CompleteStep();
