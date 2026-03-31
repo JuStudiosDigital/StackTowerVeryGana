@@ -26,27 +26,16 @@ public sealed class BrandingManager : MonoBehaviour
 
     [Header("Branding - Imágenes")]
 
-    /// <summary>
-    /// Colección de sprites disponibles para branding visual.
-    /// Utilizado por sistemas como BrandingDisplay.
-    /// </summary>
     [SerializeField]
     private List<Sprite> images = new();
 
     [Header("Branding - Textos")]
 
-    /// <summary>
-    /// Colección de textos dinámicos para branding.
-    /// Permite variaciones sin recompilar.
-    /// </summary>
     [SerializeField]
     private List<string> texts = new();
 
     [Header("Branding - Colores")]
 
-    /// <summary>
-    /// Paleta de colores utilizada para personalizar contenedores.
-    /// </summary>
     [SerializeField]
     private List<Color> colors = new();
 
@@ -54,24 +43,22 @@ public sealed class BrandingManager : MonoBehaviour
 
     /// <summary>
     /// Cantidad de contenedores necesarios para generar una moneda.
-    /// 
-    /// Nota de diseño:
-    /// Este valor se externaliza para permitir ajustes rápidos
-    /// (balanceo, campañas, A/B testing) sin modificar código.
     /// </summary>
     [SerializeField]
     private int containersPerCoin = 3;
+
+    [Header("Reward Configuration")]
+
+    /// <summary>
+    /// Cantidad de monedas otorgadas por acción (lógicas y visuales).
+    /// </summary>
+    [SerializeField]
+    private int coinsPerAction = 2;
 
     #endregion
 
     #region Unity
 
-    /// <summary>
-    /// Inicializa la instancia global.
-    /// 
-    /// Garantiza unicidad para evitar inconsistencias de configuración
-    /// entre múltiples instancias en escena.
-    /// </summary>
     private void Awake()
     {
         if (Instance != null)
@@ -87,9 +74,6 @@ public sealed class BrandingManager : MonoBehaviour
 
     #region Public API
 
-    /// <summary>
-    /// Obtiene un sprite aleatorio de branding.
-    /// </summary>
     public Sprite GetRandomImage()
     {
         if (images.Count == 0)
@@ -98,9 +82,6 @@ public sealed class BrandingManager : MonoBehaviour
         return images[Random.Range(0, images.Count)];
     }
 
-    /// <summary>
-    /// Obtiene un texto aleatorio de branding.
-    /// </summary>
     public string GetRandomText()
     {
         if (texts.Count == 0)
@@ -109,9 +90,6 @@ public sealed class BrandingManager : MonoBehaviour
         return texts[Random.Range(0, texts.Count)];
     }
 
-    /// <summary>
-    /// Obtiene un color aleatorio de branding.
-    /// </summary>
     public Color GetRandomColor()
     {
         if (colors.Count == 0)
@@ -122,13 +100,16 @@ public sealed class BrandingManager : MonoBehaviour
 
     /// <summary>
     /// Obtiene la cantidad de contenedores requeridos para generar una moneda.
-    /// 
-    /// Se asegura de devolver un valor válido (>= 1) para evitar bloqueos lógicos.
     /// </summary>
     public int GetContainersPerCoin()
     {
         return Mathf.Max(1, containersPerCoin);
     }
+
+    /// <summary>
+    /// Cantidad de monedas otorgadas por acción (lógicas y visuales).
+    /// </summary>
+    public int CoinsPerAction => coinsPerAction;
 
     #endregion
 }

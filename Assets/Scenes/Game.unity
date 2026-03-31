@@ -4540,6 +4540,7 @@ MonoBehaviour:
   - {r: 0.1265574, g: 0.8490566, b: 0.3124488, a: 1}
   - {r: 0.11879673, g: 0.15242606, b: 0.8867924, a: 1}
   containersPerCoin: 3
+  coinsPerAction: 4
 --- !u!4 &1088857131
 Transform:
   m_ObjectHideFlags: 0
@@ -8324,6 +8325,8 @@ MonoBehaviour:
   coinsRewardedPerAction: 1
   visualCoinsAction: 1
   actionRewardRadius: 0.3
+  visualCoinsComplete: 10
+  completedRewardRadius: 2.5
 --- !u!4 &2051649617
 Transform:
   m_ObjectHideFlags: 0
@@ -8800,7 +8803,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   audioManager: {fileID: 2124796612}
   currencyManager: {fileID: 2124796611}
-  isOnlineModeEnabled: 0
   GameTitle: tile_puzzle
 --- !u!4 &2124796614
 Transform:

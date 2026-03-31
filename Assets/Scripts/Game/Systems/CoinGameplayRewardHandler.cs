@@ -25,9 +25,6 @@ public class CoinGameplayRewardHandler : MonoBehaviour, IGameplayRewardHandler
 
     #region Reward Configuration
 
-    /// <summary>
-    /// Configuración de recompensas otorgadas durante acciones intermedias.
-    /// </summary>
     [Header("Action Reward")]
 
     /// <summary>
@@ -46,11 +43,17 @@ public class CoinGameplayRewardHandler : MonoBehaviour, IGameplayRewardHandler
     /// </summary>
     [SerializeField] private float actionRewardRadius = 0.3f;
 
-    /// <summary>
-    /// Configuración de recompensas otorgadas al completar un objetivo.
-    /// </summary>
     [Header("Completion Reward")]
 
+    /// <summary>
+    /// Cantidad de monedas visuales generadas al completar.
+    /// </summary>
+    [SerializeField] private int visualCoinsComplete = 10;
+
+    /// <summary>
+    /// Radio de dispersión de las monedas visuales de finalización.
+    /// </summary>
+    [SerializeField] private float completedRewardRadius = 2.5f;
 
     #endregion
 
@@ -62,19 +65,10 @@ public class CoinGameplayRewardHandler : MonoBehaviour, IGameplayRewardHandler
     /// </summary>
     private int totalCoinsCollected;
 
-
-
     #endregion
 
     #region Unity Lifecycle
 
-    /// <summary>
-    /// Inicializa las dependencias internas del sistema de recompensas.
-    /// 
-    /// Convierte de forma segura el comportamiento serializado
-    /// a la interfaz esperada, permitiendo desacoplamiento
-    /// y flexibilidad de implementación.
-    /// </summary>
     private void Awake()
     {        
         ResolveRewardConfiguration();
@@ -85,18 +79,23 @@ public class CoinGameplayRewardHandler : MonoBehaviour, IGameplayRewardHandler
     #region Branding configuration
 
     /// <summary>
-    /// Inicializa la configuración de recompensas desde el sistema de recursos.
+    /// Inicializa la configuración de recompensas desde el sistema de branding.
     /// Usa valores locales como fallback.
     /// </summary>
     private void ResolveRewardConfiguration()
     {
-        var data = GameDataProvider.Instance;
+        var branding = BrandingManager.Instance;
 
-
-        if (data == null || !data.IsInitialized)
+        if (branding == null)
             return;
-        
-        coinsRewardedPerAction = data.Runtime.KeysPerAction;
+
+        int value = branding.CoinsPerAction;
+
+        if (value > 0)
+        {
+            coinsRewardedPerAction = value;
+            visualCoinsAction = value;
+        }
     }
 
     #endregion
@@ -105,13 +104,7 @@ public class CoinGameplayRewardHandler : MonoBehaviour, IGameplayRewardHandler
 
     /// <summary>
     /// Maneja la recompensa asociada a una acción de gameplay.
-    /// 
-    /// Genera monedas visuales en la posición indicada y
-    /// suma la cantidad correspondiente al total lógico.
     /// </summary>
-    /// <param name="worldPosition">
-    /// Posición en el mundo donde se generará la recompensa visual.
-    /// </param>
     public void HandleActionReward(Vector3 worldPosition)
     {
         coinRewardSpawner.SpawnCoins(
@@ -125,12 +118,8 @@ public class CoinGameplayRewardHandler : MonoBehaviour, IGameplayRewardHandler
     }
 
     /// <summary>
-    /// Devuelve el total de monedas lógicas acumuladas
-    /// durante la ejecución actual.
+    /// Devuelve el total de monedas lógicas acumuladas.
     /// </summary>
-    /// <returns>
-    /// Cantidad total de monedas recolectadas.
-    /// </returns>
     public int GetTotalReward()
     {
         return totalCoinsCollected;
