@@ -112,7 +112,7 @@ public class GameManager : MonoBehaviour
     public string UserHash { get; private set; }
     public bool IsBrandedMode { get; private set; }
     public string CampaignId { get; private set; }
-    public string GameTitle = "tile_puzzle";
+     [HideInInspector] public string GameTitle = "stack-tower";
 
     #endregion
 
