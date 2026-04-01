@@ -1911,7 +1911,7 @@ MonoBehaviour:
   m_OnCullStateChanged:
     m_PersistentCalls:
       m_Calls: []
-  m_text: Monedas
+  m_text: Llaves
   m_isRightToLeft: 0
   m_fontAsset: {fileID: 11400000, guid: 746520019f6f2664b994c121a3d96393, type: 2}
   m_sharedMaterial: {fileID: 1482088427151633755, guid: 746520019f6f2664b994c121a3d96393, type: 2}
