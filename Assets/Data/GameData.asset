@@ -13,9 +13,11 @@ MonoBehaviour:
   m_Name: GameData
   m_EditorClassIdentifier: Assembly-CSharp::GameData
   mainLogo: {fileID: 0}
-  watermarkLogo: {fileID: 0}
-  puzzleImage: {fileID: 0}
-  music: {fileID: 0}
-  keyWin: {fileID: 0}
-  victory: {fileID: 0}
-  victoryMessages: []
+  containerSprites: []
+  containerColors: []
+  containersPerKey: 0
+  keyWin: {fileID: 8300000, guid: a306a7bd5001a844fa5ff8ed02724541, type: 3}
+  victory: {fileID: 8300000, guid: aaf64c7b525e8cf4fb4ee29483bc0415, type: 3}
+  gameOverMessages:
+  - Felicidades VER y GANA te saluda
+  keysPerAction: 0
