@@ -1,59 +1,72 @@
 using System.Collections.Generic;
 using UnityEngine;
+using System;
 
 /// <summary>
 /// Proveedor centralizado de datos de branding y configuración de gameplay.
-/// 
-/// Este componente actúa como una fuente única de verdad (Single Source of Truth)
-/// para elementos visuales y parámetros configurables del juego.
-///
-/// Responsabilidades:
-/// - Proveer variaciones visuales (sprites, textos, colores)
-/// - Exponer parámetros de gameplay configurables sin hardcode
-/// 
-/// Nota de diseño:
-/// Se implementa como singleton para facilitar acceso global controlado,
-/// evitando la necesidad de inyección manual en múltiples sistemas.
+/// Actúa como fachada entre GameDataProvider y el juego,
+/// permitiendo fallback seguro y sincronización dinámica.
 /// </summary>
 public sealed class BrandingManager : MonoBehaviour
 {
+    #region Singleton
+
     /// <summary>
     /// Instancia global del sistema de branding.
     /// </summary>
     public static BrandingManager Instance { get; private set; }
+
+    #endregion
+
+    #region Events
+
+    /// <summary>
+    /// Evento disparado cuando el branding ha sido sincronizado.
+    /// </summary>
+    public static event Action OnBrandingReady;
+
+    #endregion
 
     #region Inspector
 
     [Header("Branding - Imágenes")]
 
     [SerializeField]
+    [Tooltip("Sprites de contenedores (fallback).")]
     private List<Sprite> images = new();
 
     [Header("Branding - Textos")]
 
     [SerializeField]
+    [Tooltip("Textos de branding (fallback).")]
     private List<string> texts = new();
 
     [Header("Branding - Colores")]
 
     [SerializeField]
+    [Tooltip("Colores de contenedores (fallback).")]
     private List<Color> colors = new();
 
     [Header("Branding - Gameplay")]
 
-    /// <summary>
-    /// Cantidad de contenedores necesarios para generar una moneda.
-    /// </summary>
     [SerializeField]
+    [Tooltip("Cantidad de contenedores necesarios por moneda (fallback).")]
     private int containersPerCoin = 3;
 
     [Header("Reward Configuration")]
 
-    /// <summary>
-    /// Cantidad de monedas otorgadas por acción (lógicas y visuales).
-    /// </summary>
     [SerializeField]
+    [Tooltip("Cantidad de monedas otorgadas por acción (fallback).")]
     private int coinsPerAction = 2;
+
+    #endregion
+
+    #region Private State
+
+    /// <summary>
+    /// Indica si ya se sincronizó con el provider.
+    /// </summary>
+    private bool isSyncedWithProvider;
 
     #endregion
 
@@ -61,7 +74,7 @@ public sealed class BrandingManager : MonoBehaviour
 
     private void Awake()
     {
-        if (Instance != null)
+        if (Instance != null && Instance != this)
         {
             Destroy(gameObject);
             return;
@@ -70,46 +83,120 @@ public sealed class BrandingManager : MonoBehaviour
         Instance = this;
     }
 
+    private void Start()
+    {
+        TrySyncWithGameDataProvider();
+    }
+
+    #endregion
+
+    #region Sync
+
+    /// <summary>
+    /// Sincroniza los datos desde GameDataProvider.
+    /// Es segura contra múltiples llamadas.
+    /// </summary>
+    private void TrySyncWithGameDataProvider()
+    {
+        if (isSyncedWithProvider)
+            return;
+
+        if (GameDataProvider.Instance == null || !GameDataProvider.Instance.IsInitialized)
+            return;
+
+        var provider = GameDataProvider.Instance;
+
+        // =========================
+        // Branding
+        // =========================
+
+        var containerSprites = provider.GetContainers();
+        if (containerSprites != null && containerSprites.Count > 0)
+        {
+            images = new List<Sprite>(containerSprites);
+        }
+
+        var containerColors = provider.GetContainerColors();
+        if (containerColors != null && containerColors.Count > 0)
+        {
+            colors = new List<Color>(containerColors);
+        }
+
+        // =========================
+        // Gameplay
+        // =========================
+
+        int containersValue = provider.GetContainersPerKey();
+        if (containersValue > 0)
+        {
+            containersPerCoin = containersValue;
+        }
+
+        int keysPerAction = provider.GetKeysPerAction();
+        if (keysPerAction > 0)
+        {
+            coinsPerAction = keysPerAction;
+        }
+
+        isSyncedWithProvider = true;
+
+        OnBrandingReady?.Invoke();
+    }
+
     #endregion
 
     #region Public API
 
     public Sprite GetRandomImage()
     {
-        if (images.Count == 0)
+        TrySyncWithGameDataProvider();
+
+        if (images == null || images.Count == 0)
             return null;
 
-        return images[Random.Range(0, images.Count)];
+        return images[UnityEngine.Random.Range(0, images.Count)];
     }
 
     public string GetRandomText()
     {
-        if (texts.Count == 0)
+        TrySyncWithGameDataProvider();
+
+        if (texts == null || texts.Count == 0)
             return string.Empty;
 
-        return texts[Random.Range(0, texts.Count)];
+        return texts[UnityEngine.Random.Range(0, texts.Count)];
     }
 
     public Color GetRandomColor()
     {
-        if (colors.Count == 0)
+        TrySyncWithGameDataProvider();
+
+        if (colors == null || colors.Count == 0)
             return Color.white;
 
-        return colors[Random.Range(0, colors.Count)];
+        return colors[UnityEngine.Random.Range(0, colors.Count)];
     }
 
     /// <summary>
-    /// Obtiene la cantidad de contenedores requeridos para generar una moneda.
+    /// Cantidad de contenedores requeridos para generar una moneda.
     /// </summary>
     public int GetContainersPerCoin()
     {
+        TrySyncWithGameDataProvider();
         return Mathf.Max(1, containersPerCoin);
     }
 
     /// <summary>
-    /// Cantidad de monedas otorgadas por acción (lógicas y visuales).
+    /// Cantidad de monedas otorgadas por acción.
     /// </summary>
-    public int CoinsPerAction => coinsPerAction;
+    public int CoinsPerAction
+    {
+        get
+        {
+            TrySyncWithGameDataProvider();
+            return coinsPerAction;
+        }
+    }
 
     #endregion
 }

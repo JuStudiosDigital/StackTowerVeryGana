@@ -4500,7 +4500,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::NewMonoBehaviourScript
   previewPrefab: {fileID: 4610956572250672453, guid: a19904becc92cc048babac74f5e8e6a6, type: 3}
   scaleFactor: 0.2
-  offset: {x: 0, y: 0}
+  offset: {x: 3.5, y: -8.7}
   containerParent: {fileID: 2081374899}
 --- !u!1 &1088857129
 GameObject:

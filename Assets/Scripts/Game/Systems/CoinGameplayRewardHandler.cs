@@ -1,23 +1,15 @@
 using UnityEngine;
 
 /// <summary>
-/// Implementación concreta del sistema de recompensas de gameplay basada en monedas.
-/// 
-/// Este componente se encarga de:
-/// - Generar monedas visuales en el mundo.
-/// - Contabilizar recompensas lógicas (monedas reales).
-/// - Manejar recompensas por acción y por finalización.
-/// 
-/// Implementa <see cref="IGameplayRewardHandler"/> para permitir
-/// una integración desacoplada con otros sistemas de gameplay.
+/// Implementación concreta del sistema de recompensas basada en monedas.
+/// Permite configuración dinámica desde BrandingManager sin depender del ciclo de vida de Unity.
 /// </summary>
 public class CoinGameplayRewardHandler : MonoBehaviour, IGameplayRewardHandler
 {
     #region Serialized References
 
     /// <summary>
-    /// Spawner responsable de instanciar monedas visuales en el mundo.
-    /// Gestiona tanto la animación como la distribución espacial.
+    /// Spawner responsable de instanciar monedas visuales.
     /// </summary>
     [SerializeField] private CoinRewardSpawner coinRewardSpawner;
 
@@ -27,63 +19,61 @@ public class CoinGameplayRewardHandler : MonoBehaviour, IGameplayRewardHandler
 
     [Header("Action Reward")]
 
-    /// <summary>
-    /// Cantidad de monedas lógicas otorgadas por cada acción.
-    /// </summary>
-    [SerializeField] private int coinsRewardedPerAction = 2;
+    [SerializeField]
+    [Tooltip("Monedas lógicas otorgadas por acción.")]
+    private int coinsRewardedPerAction = 2;
 
-    /// <summary>
-    /// Cantidad de monedas visuales generadas por acción.
-    /// No necesariamente coincide con las monedas lógicas.
-    /// </summary>
-    [SerializeField] private int visualCoinsAction = 1;
+    [SerializeField]
+    [Tooltip("Monedas visuales generadas por acción.")]
+    private int visualCoinsAction = 1;
 
-    /// <summary>
-    /// Radio de dispersión de las monedas visuales por acción.
-    /// </summary>
-    [SerializeField] private float actionRewardRadius = 0.3f;
+    [SerializeField]
+    [Tooltip("Radio de dispersión visual.")]
+    private float actionRewardRadius = 0.3f;
 
     [Header("Completion Reward")]
 
-    /// <summary>
-    /// Cantidad de monedas visuales generadas al completar.
-    /// </summary>
     [SerializeField] private int visualCoinsComplete = 10;
-
-    /// <summary>
-    /// Radio de dispersión de las monedas visuales de finalización.
-    /// </summary>
     [SerializeField] private float completedRewardRadius = 2.5f;
 
     #endregion
 
     #region Private State
 
-    /// <summary>
-    /// Contador interno de monedas lógicas acumuladas
-    /// durante la sesión de gameplay.
-    /// </summary>
     private int totalCoinsCollected;
+
+    /// <summary>
+    /// Evita múltiples configuraciones redundantes.
+    /// </summary>
+    private bool isConfigured;
 
     #endregion
 
     #region Unity Lifecycle
 
-    private void Awake()
-    {        
-        ResolveRewardConfiguration();
+    private void OnEnable()
+    {
+        BrandingManager.OnBrandingReady += ResolveRewardConfiguration;
+    }
+
+    private void OnDisable()
+    {
+        BrandingManager.OnBrandingReady -= ResolveRewardConfiguration;
     }
 
     #endregion
 
-    #region Branding configuration
+    #region Branding Configuration
 
     /// <summary>
-    /// Inicializa la configuración de recompensas desde el sistema de branding.
-    /// Usa valores locales como fallback.
+    /// Sincroniza configuración desde BrandingManager.
+    /// Puede llamarse manualmente o vía evento.
     /// </summary>
-    private void ResolveRewardConfiguration()
+    public void ResolveRewardConfiguration()
     {
+        if (isConfigured)
+            return;
+
         var branding = BrandingManager.Instance;
 
         if (branding == null)
@@ -96,15 +86,14 @@ public class CoinGameplayRewardHandler : MonoBehaviour, IGameplayRewardHandler
             coinsRewardedPerAction = value;
             visualCoinsAction = value;
         }
+
+        isConfigured = true;
     }
 
     #endregion
 
-    #region IGameplayRewardHandler Implementation
+    #region IGameplayRewardHandler
 
-    /// <summary>
-    /// Maneja la recompensa asociada a una acción de gameplay.
-    /// </summary>
     public void HandleActionReward(Vector3 worldPosition)
     {
         coinRewardSpawner.SpawnCoins(
@@ -117,9 +106,6 @@ public class CoinGameplayRewardHandler : MonoBehaviour, IGameplayRewardHandler
         totalCoinsCollected += coinsRewardedPerAction;
     }
 
-    /// <summary>
-    /// Devuelve el total de monedas lógicas acumuladas.
-    /// </summary>
     public int GetTotalReward()
     {
         return totalCoinsCollected;

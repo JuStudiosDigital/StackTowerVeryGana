@@ -1,10 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
 
-/// <summary>
-/// Punto único de acceso a los datos del juego.
-/// Oculta la diferencia entre fallback y runtime.
-/// </summary>
 public class GameDataProvider : MonoBehaviour
 {
     public static GameDataProvider Instance { get; private set; }
@@ -14,9 +10,6 @@ public class GameDataProvider : MonoBehaviour
 
     private GameRuntimeData runtimeData;
 
-    /// <summary>
-    /// Indica si el runtime ya fue inicializado.
-    /// </summary>
     public bool IsInitialized => runtimeData != null;
 
     private void Awake()
@@ -31,9 +24,6 @@ public class GameDataProvider : MonoBehaviour
         DontDestroyOnLoad(gameObject);
     }
 
-    /// <summary>
-    /// Inicializa el runtime data desde fallback.
-    /// </summary>
     public void Initialize()
     {
         runtimeData = new GameRuntimeData();
@@ -66,6 +56,12 @@ public class GameDataProvider : MonoBehaviour
     {
         if (!IsInitialized) return null;
         return runtimeData.ContainerColors;
+    }
+
+    public int GetContainersPerKey()
+    {
+        if (!IsInitialized) return 0;
+        return runtimeData.ContainersPerKey;
     }
 
     public int GetKeysPerAction()
