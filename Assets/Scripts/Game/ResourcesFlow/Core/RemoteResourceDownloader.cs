@@ -4,19 +4,11 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 /// <summary>
-/// Proporciona utilidades para la descarga de recursos remotos utilizados en runtime.
-/// Encapsula la lógica de acceso a red y conversión de datos para texturas y audio,
-/// desacoplando la obtención de assets del resto del sistema.
+/// Utilidad para descargar recursos remotos.
+/// Soporta Texture2D, AudioClip y Sprite.
 /// </summary>
 public class RemoteResourceDownloader
 {
-    /// <summary>
-    /// Descarga una textura desde una URL remota.
-    /// </summary>
-    /// <param name="url">Dirección del recurso remoto.</param>
-    /// <param name="onSuccess">Callback ejecutado al completar correctamente la descarga.</param>
-    /// <param name="onFailure">Callback ejecutado en caso de error.</param>
-    /// <returns>IEnumerator para ejecución en coroutine.</returns>
     public IEnumerator DownloadTexture(
         string url,
         Action<Texture2D> onSuccess,
@@ -57,14 +49,6 @@ public class RemoteResourceDownloader
         }
     }
 
-    /// <summary>
-    /// Descarga un clip de audio desde una URL remota.
-    /// El tipo de audio se infiere automáticamente a partir de la extensión del archivo.
-    /// </summary>
-    /// <param name="url">Dirección del recurso remoto.</param>
-    /// <param name="onSuccess">Callback ejecutado al completar correctamente la descarga.</param>
-    /// <param name="onFailure">Callback ejecutado en caso de error.</param>
-    /// <returns>IEnumerator para ejecución en coroutine.</returns>
     public IEnumerator DownloadAudio(
         string url,
         Action<AudioClip> onSuccess,
@@ -110,10 +94,8 @@ public class RemoteResourceDownloader
     }
 
     /// <summary>
-    /// Crea un <see cref="Sprite"/> a partir de una textura previamente descargada.
+    /// Convierte una textura descargada en Sprite.
     /// </summary>
-    /// <param name="texture">Textura fuente.</param>
-    /// <returns>Sprite generado o null si la textura es inválida.</returns>
     public Sprite CreateSprite(Texture2D texture)
     {
         if (texture == null)
@@ -131,11 +113,6 @@ public class RemoteResourceDownloader
         );
     }
 
-    /// <summary>
-    /// Determina el tipo de audio esperado en función de la extensión de la URL.
-    /// </summary>
-    /// <param name="url">URL del recurso.</param>
-    /// <returns>Tipo de audio compatible con UnityWebRequest.</returns>
     private AudioType ResolveAudioType(string url)
     {
         string lower = url.ToLower();

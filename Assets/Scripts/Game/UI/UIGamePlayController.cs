@@ -299,7 +299,7 @@ public class UIGamePlayController : MonoBehaviour
             return;
 
 
-        var messages = data.Runtime.VictoryMessages;
+        var messages = data.Runtime.GameOverMessages;
 
 
         string victoryMessage = (messages != null && messages.Count > 0)

@@ -3,24 +3,12 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 
-/// <summary>
-/// Coordina el flujo completo de obtención y preparación de datos del juego,
-/// incluyendo fallback local, cacheo, validación de datos remotos y descarga de assets.
-/// </summary>
 public class GameDataLoader
 {
     private readonly RemoteFetcher fetcher = new RemoteFetcher();
     private readonly SimpleCache cache = new SimpleCache();
 
-    /// <summary>
-    /// Ejecuta la secuencia de carga de datos:
-    /// inicializa fallback, intenta cache, realiza fetch remoto si es necesario,
-    /// valida la respuesta y sincroniza los assets requeridos.
-    /// </summary>
-    /// <param name="provider">Proveedor central de datos del juego.</param>
-    /// <param name="url">Endpoint remoto de configuración.</param>
-    /// <param name="postBody">Payload opcional para requests tipo POST.</param>
-    /// <returns>Coroutine que representa el flujo de carga completo.</returns>
+
     public IEnumerator Load(
         GameDataProvider provider,
         string url,
@@ -61,7 +49,17 @@ public class GameDataLoader
             {
                 DevLog.Log("[GameDataLoader] ✔ Cache válida, cargando assets...");
                 GameManager.Instance.ConfigureAds(true);
-                yield return LoadAssets(runtime, provider);
+                AssetLoadResult cacheResult = null;
+
+                yield return LoadAssets(runtime, provider, r => cacheResult = r);
+                
+                if (cacheResult != null && cacheResult.RequiredFailed > 0)
+                {
+                    DevLog.Log("[GameDataLoader] ❌ Cache inválida por assets");
+                
+                    GameManager.Instance.ConfigureAds(false);
+                    yield break;
+                }
 
                 DevLog.Log("[GameDataLoader] === FIN LOAD (CACHE) ===");
                 yield break;
@@ -121,7 +119,20 @@ public class GameDataLoader
         GameManager.Instance.ConfigureAds(true);
 
         /// 🔹 6. ASSETS
-        yield return LoadAssets(runtime, provider);
+        AssetLoadResult assetResult = null;
+
+        yield return LoadAssets(runtime, provider, r => assetResult = r);
+
+        if (assetResult != null && assetResult.RequiredFailed > 0)
+        {
+            DevLog.Log("[GameDataLoader] ❌ Fallaron assets críticos → fallback total");
+
+            provider.Initialize(); 
+            GameManager.Instance.ConfigureAds(false);
+
+            DevLog.Log("[GameDataLoader] === FIN LOAD (FALLBACK POR ASSETS) ===");
+            yield break;
+        }
 
         DevLog.Log("[GameDataLoader] ✔ Datos y assets cargados correctamente");
         DevLog.Log("[GameDataLoader] === FIN LOAD (REMOTE) ===");
@@ -129,16 +140,7 @@ public class GameDataLoader
 
     #region Internal
 
-    /// <summary>
-    /// Deserializa el JSON recibido y lo aplica al runtime,
-    /// validando previamente los bloques críticos requeridos.
-    /// </summary>
-    /// <param name="runtime">Instancia runtime donde se aplicarán los datos.</param>
-    /// <param name="json">Contenido JSON recibido desde cache o red.</param>
-    /// <returns>
-    /// True si los datos son válidos y fueron aplicados correctamente;
-    /// false en caso contrario.
-    /// </returns>
+
     private bool ApplyJson(GameRuntimeData runtime, string json)
     {
         if (string.IsNullOrWhiteSpace(json))
@@ -179,16 +181,10 @@ public class GameDataLoader
         }
     }
 
-    /// <summary>
-    /// Ejecuta la descarga de todos los assets definidos en el runtime,
-    /// utilizando el sistema de requests generado dinámicamente.
-    /// </summary>
-    /// <param name="runtime">Fuente de datos que define los assets requeridos.</param>
-    /// <param name="provider">MonoBehaviour utilizado para ejecutar coroutines.</param>
-    /// <returns>Coroutine que representa la carga completa de assets.</returns>
     private IEnumerator LoadAssets(
         GameRuntimeData runtime,
-        GameDataProvider provider)
+        GameDataProvider provider,
+        Action<AssetLoadResult> onComplete)
     {
         DevLog.Log("[GameDataLoader] Generando requests de assets...");
 
@@ -204,14 +200,21 @@ public class GameDataLoader
 
         AssetLoader loader = new AssetLoader();
 
+        AssetLoadResult result = null;
+
         yield return loader.LoadAll(
             requests,
             provider,
+            r => result = r, 
             progress =>
             {
                 DevLog.Log($"[GameDataLoader] Asset Progress: {progress:P0}");
             }
         );
+
+        DevLog.Log($"[GameDataLoader] Assets result → Success: {result.Success}, Failed: {result.Failed}, RequiredFailed: {result.RequiredFailed}");
+
+        onComplete?.Invoke(result);
 
         DevLog.Log("[GameDataLoader] ✔ Assets cargados");
     }

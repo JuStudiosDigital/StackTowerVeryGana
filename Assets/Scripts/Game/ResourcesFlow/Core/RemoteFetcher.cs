@@ -4,19 +4,10 @@ using UnityEngine;
 using UnityEngine.Networking;
 
 /// <summary>
-/// Responsable de realizar solicitudes HTTP para obtener contenido JSON
-/// desde un endpoint remoto mediante métodos GET o POST.
+/// Encargado de obtener JSON desde distintas fuentes.
 /// </summary>
 public class RemoteFetcher
 {
-    /// <summary>
-    /// Ejecuta una solicitud HTTP asíncrona y retorna el JSON recibido.
-    /// </summary>
-    /// <param name="url">Endpoint de destino para la solicitud.</param>
-    /// <param name="postBody">Payload en formato JSON para solicitudes POST. Si es null o vacío, se usa GET.</param>
-    /// <param name="onSuccess">Callback invocado con el JSON recibido cuando la solicitud es exitosa.</param>
-    /// <param name="onFailure">Callback invocado cuando ocurre un error en la solicitud o la respuesta es inválida.</param>
-    /// <returns>Coroutine de Unity que gestiona el ciclo de vida de la solicitud.</returns>
     public IEnumerator Fetch(
         string url,
         string postBody,

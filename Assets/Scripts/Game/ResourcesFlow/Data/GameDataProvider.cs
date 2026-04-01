@@ -1,27 +1,21 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>
-/// Proveedor centralizado de datos del juego en tiempo de ejecución.
-/// Expone una API unificada que abstrae la fuente de datos (fallback o remoto).
+/// Punto único de acceso a los datos del juego.
+/// Oculta la diferencia entre fallback y runtime.
 /// </summary>
 public class GameDataProvider : MonoBehaviour
 {
-    /// <summary>
-    /// Instancia global accesible del proveedor de datos.
-    /// </summary>
     public static GameDataProvider Instance { get; private set; }
 
     [SerializeField]
-    [Tooltip("Fuente de datos base utilizada como fallback cuando no hay configuración remota.")]
     private GameData baseData;
 
-    /// <summary>
-    /// Contenedor mutable con el estado actual del juego.
-    /// </summary>
     private GameRuntimeData runtimeData;
 
     /// <summary>
-    /// Indica si el runtime ha sido inicializado correctamente.
+    /// Indica si el runtime ya fue inicializado.
     /// </summary>
     public bool IsInitialized => runtimeData != null;
 
@@ -38,8 +32,7 @@ public class GameDataProvider : MonoBehaviour
     }
 
     /// <summary>
-    /// Inicializa el estado runtime a partir de los datos base (fallback).
-    /// Debe ejecutarse antes de cualquier acceso a datos.
+    /// Inicializa el runtime data desde fallback.
     /// </summary>
     public void Initialize()
     {
@@ -47,27 +40,39 @@ public class GameDataProvider : MonoBehaviour
         runtimeData.Initialize(baseData);
     }
 
-    /// <summary>
-    /// Acceso directo al contenedor de datos runtime.
-    /// </summary>
-    public GameRuntimeData Runtime => runtimeData;
+    public GameRuntimeData Runtime
+    {
+        get
+        {
+            if (!IsInitialized)
+            {
+                DevLog.Warning("[GameDataProvider] Runtime solicitado sin inicializar");
+                return null;
+            }
+
+            return runtimeData;
+        }
+    }
 
     #region Public Access API
 
-    /// <summary>
-    /// Retorna la imagen principal del gameplay.
-    /// </summary>
-    public Texture2D GetPuzzleImage() => runtimeData.PuzzleImage;
+    public List<Sprite> GetContainers()
+    {
+        if (!IsInitialized) return null;
+        return runtimeData.ContainerSprites;
+    }
 
-    /// <summary>
-    /// Retorna el audio de fondo configurado.
-    /// </summary>
-    public AudioClip GetMusic() => runtimeData.Music;
+    public List<Color> GetContainerColors()
+    {
+        if (!IsInitialized) return null;
+        return runtimeData.ContainerColors;
+    }
 
-    /// <summary>
-    /// Retorna la cantidad de llaves otorgadas por acción.
-    /// </summary>
-    public int GetKeysPerAction() => runtimeData.KeysPerAction;
+    public int GetKeysPerAction()
+    {
+        if (!IsInitialized) return 0;
+        return runtimeData.KeysPerAction;
+    }
 
     #endregion
 }

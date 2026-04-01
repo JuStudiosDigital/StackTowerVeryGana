@@ -39,7 +39,8 @@ public class LevelResourcePreloadStep : ILoadingStep
         /// Cargar assets en paralelo
         yield return assetLoader.LoadAll(
             requests,
-            provider, // MonoBehaviour para correr coroutines
+            provider,
+            _ => { }, // ignoras resultado
             progress => context.ReportStepProgress(progress)
         );
 

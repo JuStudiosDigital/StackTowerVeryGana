@@ -3784,7 +3784,7 @@ MonoBehaviour:
   uIAnimationManagerMainMenu: {fileID: 1845320717}
   loadingUI: {fileID: 1539401230}
   sceneName: Game
-  levelConfigUrl: http://localhost:8080/games/assets
+  levelConfigUrl: https://justudios.co/test-verygana/stack-tower/config/stacktowerconfig.json
 --- !u!1 &1882965558
 GameObject:
   m_ObjectHideFlags: 0

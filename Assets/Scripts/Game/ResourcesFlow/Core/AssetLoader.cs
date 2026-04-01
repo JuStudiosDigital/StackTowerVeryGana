@@ -4,8 +4,8 @@ using System.Collections.Generic;
 using UnityEngine;
 
 /// <summary>
-/// Loader genérico encargado de la descarga y resolución de assets remotos.
-/// Maneja cache en memoria y ejecución concurrente de cargas sin acoplarse a lógica de juego.
+/// Loader genérico de assets.
+/// No conoce lógica de juego.
 /// </summary>
 public class AssetLoader
 {
@@ -13,18 +13,17 @@ public class AssetLoader
     private readonly AssetCache cache = new AssetCache();
 
     /// <summary>
-    /// Ejecuta la carga de múltiples solicitudes de assets en paralelo.
-    /// Reporta progreso agregado basado en la cantidad de requests completados.
+    /// Carga una lista de requests de assets.
     /// </summary>
-    /// <param name="requests">Lista de solicitudes de assets a procesar.</param>
-    /// <param name="runner">Instancia de MonoBehaviour utilizada para ejecutar coroutines.</param>
-    /// <param name="onProgress">Callback opcional de progreso normalizado (0–1).</param>
-    /// <returns>Coroutine que finaliza cuando todas las cargas han terminado.</returns>
     public IEnumerator LoadAll(
         List<AssetRequest> requests,
         MonoBehaviour runner,
+        Action<AssetLoadResult> onComplete,
         Action<float> onProgress = null)
     {
+        AssetLoadResult result = new AssetLoadResult();
+        result.Total = requests.Count;
+
         if (requests == null || runner == null)
         {
             DevLog.Warning("[AssetLoader] Requests o runner null");
@@ -58,10 +57,20 @@ public class AssetLoader
 
             runner.StartCoroutine(
                 Load(request,
-                    () => CompleteStep(),
                     () =>
                     {
+                        result.Success++;
+                        CompleteStep();
+                    },
+                    () =>
+                    {
+                        result.Failed++;
+
+                        if (request.IsRequired)
+                            result.RequiredFailed++;
+
                         DevLog.Warning($"[AssetLoader] Falló carga: {request.Url}");
+
                         CompleteStep();
                     })
             );
@@ -73,11 +82,9 @@ public class AssetLoader
         }
 
         DevLog.Log("[AssetLoader] Carga completa");
+        onComplete?.Invoke(result);
     }
 
-    /// <summary>
-    /// Resuelve una solicitud individual delegando la carga según el tipo de asset.
-    /// </summary>
     private IEnumerator Load(
         AssetRequest request,
         Action onSuccess,
@@ -113,9 +120,6 @@ public class AssetLoader
         }
     }
 
-    /// <summary>
-    /// Carga una textura desde cache o red y ejecuta el callback asociado.
-    /// </summary>
     private IEnumerator LoadTexture(
         AssetRequest request,
         Action onSuccess,
@@ -152,9 +156,6 @@ public class AssetLoader
         );
     }
 
-    /// <summary>
-    /// Carga un clip de audio desde cache o red y ejecuta el callback asociado.
-    /// </summary>
     private IEnumerator LoadAudio(
         AssetRequest request,
         Action onSuccess,
@@ -191,9 +192,6 @@ public class AssetLoader
         );
     }
 
-    /// <summary>
-    /// Genera un sprite a partir de una textura, utilizando cache si es posible.
-    /// </summary>
     private IEnumerator LoadSprite(
         AssetRequest request,
         Action onSuccess,
@@ -249,9 +247,6 @@ public class AssetLoader
         );
     }
 
-    /// <summary>
-    /// Crea un sprite centrado a partir de una textura válida.
-    /// </summary>
     private Sprite CreateSprite(Texture2D texture)
     {
         if (texture == null)
@@ -268,7 +263,7 @@ public class AssetLoader
     }
 
     /// <summary>
-    /// Ejecuta un callback protegido contra excepciones para evitar interrupciones en el flujo de carga.
+    /// Ejecuta callbacks de forma segura.
     /// </summary>
     private void SafeInvoke(Action<UnityEngine.Object> action, UnityEngine.Object obj)
     {
@@ -281,4 +276,12 @@ public class AssetLoader
             DevLog.Error($"[AssetLoader] Error en OnLoaded: {e.Message}");
         }
     }
+}
+
+public class AssetLoadResult
+{
+    public int Total;
+    public int Success;
+    public int Failed;
+    public int RequiredFailed;
 }
