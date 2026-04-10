@@ -66,10 +66,6 @@ public class UIGamePlayController : MonoBehaviour
 
     #region Branding configuration
 
-    /// <summary>
-    /// URL del JSON de configuración del nivel.
-    /// </summary>
-    [SerializeField] private string levelConfigUrl;
 
     /// <summary>
     /// Nombre de la escena de gameplay actual.
@@ -211,7 +207,7 @@ public class UIGamePlayController : MonoBehaviour
                 userHash = GameManager.Instance.UserHash,
                 isBrandedMode = GameManager.Instance.IsBrandedMode,
                 campaignId = GameManager.Instance.CampaignId,
-                gameTitle = GameManager.Instance.GameTitle
+                gameTitle = GameManager.Instance.GameID
             };
    
             postBody = JsonUtility.ToJson(requestDto);
@@ -222,7 +218,7 @@ public class UIGamePlayController : MonoBehaviour
    
         if (GameManager.Instance.IsBrandedMode)
         {
-            steps.Add(new LevelRemoteConfigStep(levelConfigUrl, postBody));
+            steps.Add(new LevelRemoteConfigStep(GameManager.Instance.ApiUrl, postBody));
         }
         else
         {

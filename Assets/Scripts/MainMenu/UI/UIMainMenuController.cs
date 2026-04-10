@@ -41,9 +41,6 @@ public class UIMainMenuController : MonoBehaviour
 
     #endregion
 
-    /// <summary>>
-    /// URL del archivo de configuración remota del nivel.
-    [SerializeField] private string levelConfigUrl;
 
     #region Public Methods
 
@@ -94,7 +91,7 @@ public class UIMainMenuController : MonoBehaviour
                 userHash = GameManager.Instance.UserHash,
                 isBrandedMode = GameManager.Instance.IsBrandedMode,
                 campaignId = GameManager.Instance.CampaignId,
-                gameTitle = GameManager.Instance.GameTitle
+                gameTitle = GameManager.Instance.GameID
             };
    
             postBody = JsonUtility.ToJson(requestDto);
@@ -105,7 +102,7 @@ public class UIMainMenuController : MonoBehaviour
    
         if (GameManager.Instance.IsBrandedMode)
         {
-            steps.Add(new LevelRemoteConfigStep(levelConfigUrl, postBody));
+            steps.Add(new LevelRemoteConfigStep(GameManager.Instance.ApiUrl, postBody));
         }
         else
         {

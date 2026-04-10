@@ -1,5 +1,7 @@
 using UnityEngine;
 using System.Runtime.InteropServices;
+using System.Collections;
+using UnityEngine.Networking;
 
 /// <summary>
 /// Administrador central del juego.
@@ -112,16 +114,25 @@ public class GameManager : MonoBehaviour
     public string UserHash { get; private set; }
     public bool IsBrandedMode { get; private set; }
     public string CampaignId { get; private set; }
-     [HideInInspector] public string GameTitle = "stack-tower";
+    [HideInInspector]public string GameID = "stack-tower";
+
+    #if UNITY_EDITOR
+    [Header("Editor Config")]
+    [SerializeField] private string editorApiUrl = "https://justudios.co/test-verygana/stack-tower/config/stacktowerconfig.json";
+    #endif
+    
 
     #endregion
+
+    [Header("Config")]
+    public string ApiUrl { get; private set; }
 
     #if UNITY_WEBGL && !UNITY_EDITOR
         [DllImport("__Internal")]
         private static extern string GetURLParameter(string paramName);
     #endif
 
-    #region Unity Lifecycle
+  #region Unity Lifecycle
 
     /// <summary>
     /// Inicializa el Singleton y asegura su persistencia entre escenas.
@@ -133,11 +144,82 @@ public class GameManager : MonoBehaviour
         {
             Instance = this;
             DontDestroyOnLoad(gameObject);
-            InitializeFromUrl();
+            StartCoroutine(InitializeGame());
             return;
         }
 
         Destroy(gameObject);
+    }
+
+    private IEnumerator InitializeGame()
+    {
+        DevLog.Log("[GameManager] Inicializando sistema...");
+
+        yield return LoadConfig();
+
+        InitializeFromUrl();
+
+        DevLog.Log("[GameManager] Inicialización completa");
+    }
+
+
+    [System.Serializable]
+    private class ConfigData
+    {
+        public string apiUrl;
+    }
+    private IEnumerator LoadConfig()
+    {
+    #if UNITY_EDITOR
+        ApiUrl = editorApiUrl;
+        DevLog.Log($"[GameManager] API URL (EDITOR): {ApiUrl}");
+        yield break;
+    #else
+        string path = GetConfigPath();
+
+        DevLog.Log($"[GameManager] Cargando config desde: {path}");
+
+        UnityWebRequest request = UnityWebRequest.Get(path);
+        yield return request.SendWebRequest();
+
+        if (request.result != UnityWebRequest.Result.Success)
+        {
+            DevLog.Log("[GameManager] Error cargando config: " + request.error);
+            ApiUrl = "";
+        }
+        else
+        {
+            try
+            {
+                ConfigData config = JsonUtility.FromJson<ConfigData>(request.downloadHandler.text);
+
+                if (config == null || string.IsNullOrEmpty(config.apiUrl))
+                    throw new System.Exception("Config inválida");
+
+                ApiUrl = config.apiUrl;
+                DevLog.Log($"[GameManager] API URL cargada: {ApiUrl}");
+            }
+            catch
+            {
+                DevLog.Log("[GameManager] JSON inválido, usando fallback");
+                ApiUrl = "";
+            }
+        }
+    #endif
+    }
+    private string GetConfigPath()
+    {
+    #if UNITY_WEBGL && !UNITY_EDITOR
+        var uri = new System.Uri(Application.absoluteURL);
+        string baseUrl = uri.GetLeftPart(System.UriPartial.Path);
+    
+        if (!baseUrl.EndsWith("/"))
+            baseUrl = baseUrl.Substring(0, baseUrl.LastIndexOf('/') + 1);
+    
+        return baseUrl + "/config.json";
+    #else
+        return "file://" + Application.dataPath + "/../config.json";
+    #endif
     }
 
     /// <summary>
@@ -184,9 +266,9 @@ public class GameManager : MonoBehaviour
 
     private void ParseBrandedMode(string value)
     {
-        IsBrandedMode = true;
-            return;
+
         // TODO: Quitar para producción, solo para pruebas rápidas en editor sin parámetros
+
         if (string.IsNullOrEmpty(value))
         {
             IsBrandedMode = false;

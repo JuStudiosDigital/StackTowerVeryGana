@@ -208,7 +208,7 @@ public class UIButtonController : MonoBehaviour,
     /// <param name="eventData">Datos del evento de puntero.</param>
     public void OnPointerExit(PointerEventData eventData)
     {
-        if (_lock || GameManager.Instance.LockUI) return;
+        if (GameManager.Instance.LockUI) return;
 
         isPointerInside = false;
         AnimateScale(initialScale);

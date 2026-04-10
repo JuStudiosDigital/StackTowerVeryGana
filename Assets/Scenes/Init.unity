@@ -334,7 +334,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   audioManager: {fileID: 891658164}
   currencyManager: {fileID: 891658163}
-  GameTitle: tile_puzzle
+  GameID: stack-tower
+  editorApiUrl: https://justudios.co/test-verygana/stack-tower/config/stacktowerconfig.json
 --- !u!4 &891658166
 Transform:
   m_ObjectHideFlags: 0
