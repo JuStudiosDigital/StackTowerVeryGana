@@ -2625,8 +2625,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ClawController
   startSpeed: 5
-  maxSpeed: 11
-  acceleration: 0.3
+  maxSpeed: 8
+  acceleration: 0.1
   minX: -6
   maxX: 6
   exitSpeed: 6
@@ -4537,8 +4537,8 @@ MonoBehaviour:
   - {r: 0.7207546, g: 0.07479521, b: 0.07479521, a: 1}
   - {r: 0.1265574, g: 0.8490566, b: 0.3124488, a: 1}
   - {r: 0.11879673, g: 0.15242606, b: 0.8867924, a: 1}
-  containersPerCoin: 3
-  coinsPerAction: 4
+  containersPerCoin: 0
+  coinsPerAction: 0
 --- !u!4 &1088857131
 Transform:
   m_ObjectHideFlags: 0
@@ -8320,8 +8320,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::CoinGameplayRewardHandler
   coinRewardSpawner: {fileID: 1745532270}
-  coinsRewardedPerAction: 1
-  visualCoinsAction: 1
+  coinsRewardedPerAction: 0
+  visualCoinsAction: 0
   actionRewardRadius: 0.3
   visualCoinsComplete: 10
   completedRewardRadius: 2.5
@@ -8802,7 +8802,7 @@ MonoBehaviour:
   audioManager: {fileID: 2124796612}
   currencyManager: {fileID: 2124796611}
   GameID: stack-tower
-  editorApiUrl: https://justudios.co/test-verygana/stack-tower/config/stacktowerconfig.json
+  editorApiUrl: https://justudios.co/test-verygana/stack-tower/config/stack-towerconfig.json
 --- !u!4 &2124796614
 Transform:
   m_ObjectHideFlags: 0

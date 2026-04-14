@@ -335,7 +335,7 @@ MonoBehaviour:
   audioManager: {fileID: 891658164}
   currencyManager: {fileID: 891658163}
   GameID: stack-tower
-  editorApiUrl: https://justudios.co/test-verygana/stack-tower/config/stacktowerconfig.json
+  editorApiUrl: ttps://justudios.co/test-verygana/stack-tower/config/stack-towerconfig.json
 --- !u!4 &891658166
 Transform:
   m_ObjectHideFlags: 0

@@ -2768,7 +2768,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::GameManager
   audioManager: {fileID: 1189883614}
   currencyManager: {fileID: 1189883613}
-  GameTitle: tile_puzzle
+  GameID: stack-tower
+  editorApiUrl: ttps://justudios.co/test-verygana/stack-tower/config/stack-towerconfig.json
 --- !u!4 &1189883616
 Transform:
   m_ObjectHideFlags: 0
@@ -3784,7 +3785,6 @@ MonoBehaviour:
   uIAnimationManagerMainMenu: {fileID: 1845320717}
   loadingUI: {fileID: 1539401230}
   sceneName: Game
-  levelConfigUrl: https://justudios.co/test-verygana/stack-tower/config/stacktowerconfig.json
 --- !u!1 &1882965558
 GameObject:
   m_ObjectHideFlags: 0
