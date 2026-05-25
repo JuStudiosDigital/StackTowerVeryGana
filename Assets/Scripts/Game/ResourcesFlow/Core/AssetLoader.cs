@@ -65,9 +65,14 @@ public class AssetLoader
                     () =>
                     {
                         result.Failed++;
+                        GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.AssetDownloadFailed);
 
                         if (request.IsRequired)
+                        {
                             result.RequiredFailed++;
+                            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.RequiredAssetFailed);
+                        }
+                            
 
                         DevLog.Warning($"[AssetLoader] Falló carga: {request.Url}");
 
@@ -93,6 +98,7 @@ public class AssetLoader
         if (string.IsNullOrWhiteSpace(request.Url))
         {
             DevLog.Warning("[AssetLoader] URL inválida");
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.AssetUrlInvalid);
             onFailure?.Invoke();
             yield break;
         }
@@ -115,6 +121,7 @@ public class AssetLoader
 
             default:
                 DevLog.Warning($"[AssetLoader] Tipo no soportado: {request.Type}");
+                GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.UnsupportedAssetType);
                 onFailure?.Invoke();
                 break;
         }
@@ -273,6 +280,7 @@ public class AssetLoader
         }
         catch (Exception e)
         {
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.AssetCallbackFailed);
             DevLog.Error($"[AssetLoader] Error en OnLoaded: {e.Message}");
         }
     }

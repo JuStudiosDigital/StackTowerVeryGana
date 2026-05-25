@@ -144,6 +144,10 @@ public class UIGamePlayController : MonoBehaviour
     /// </summary>
     public void BackToMainMenu()
     {
+        gamePlayManager.ReportCurrentTelemetrySnapshot();
+
+        GameEvents.RaiseGameEnded(GameTelemetryResult.Abandoned);
+
         OnGameplayExitCompleted();
     }
 
@@ -250,7 +254,8 @@ public class UIGamePlayController : MonoBehaviour
     private void OnGameOverConfirmed()
     {
         DevLog.Log("UIGamePlayController: Gameover confirmed, reloading gameplay.");
-        
+        GameEvents.RaiseGameEnded(GameTelemetryResult.Win);
+        GameEvents.RaiseLoadStarted();
         uIAnimationManagerGameplay.ShowLoading();
         StartCoroutine(RunReloadGameplayFlow());
     }

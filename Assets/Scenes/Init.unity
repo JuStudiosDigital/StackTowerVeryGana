@@ -194,6 +194,64 @@ MonoBehaviour:
   m_FillOrigin: 0
   m_UseSpriteMesh: 0
   m_PixelsPerUnitMultiplier: 1
+--- !u!1 &417821444
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 417821447}
+  - component: {fileID: 417821446}
+  - component: {fileID: 417821445}
+  m_Layer: 0
+  m_Name: TelemetrySystem
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &417821445
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 417821444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 165e3cdac8f0b964ead1391c3bd06cac, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StatsCollector
+--- !u!114 &417821446
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 417821444}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: a93f04ec0a5ca8b4ea8f29206fed0740, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::StatsSender
+  timeoutSeconds: 10
+--- !u!4 &417821447
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 417821444}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 0, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &607582596
 GameObject:
   m_ObjectHideFlags: 0
@@ -335,7 +393,8 @@ MonoBehaviour:
   audioManager: {fileID: 891658164}
   currencyManager: {fileID: 891658163}
   GameID: stack-tower
-  editorApiUrl: ttps://justudios.co/test-verygana/stack-tower/config/stack-towerconfig.json
+  editorApiUrl: https://justudios.co/test-verygana/stack-tower/config/stack-towerconfig.json
+  editorTelemetryUrl: https://justudios.co/test-verygana/telemetry/test_stats.php
 --- !u!4 &891658166
 Transform:
   m_ObjectHideFlags: 0
@@ -1505,3 +1564,4 @@ SceneRoots:
   - {fileID: 1610845859}
   - {fileID: 1663391793}
   - {fileID: 891658166}
+  - {fileID: 417821447}

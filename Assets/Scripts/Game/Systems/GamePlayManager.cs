@@ -101,6 +101,7 @@ public sealed class GamePlayManager : MonoBehaviour
     /// Indica si el gameplay ya finalizó (protección contra duplicados).
     /// </summary>
     private bool isCompleted;
+    private float gameplayStartRealtime;
 
     #endregion
 
@@ -133,6 +134,7 @@ public sealed class GamePlayManager : MonoBehaviour
     /// </summary>
     private void Start()
     {
+        GameEvents.RaiseLoadFinished();
         GameplayEnterRequested?.Invoke(uiTransitionDuration);
 
         gameplayMechanic?.StartMechanic();
@@ -209,7 +211,8 @@ public sealed class GamePlayManager : MonoBehaviour
             DevLog.Error("GamePlayManager: GameClock no asignado.");
             return;
         }
-
+        GameEvents.RaiseGameStarted();
+        gameplayStartRealtime = Time.realtimeSinceStartup;
         gameClock.SetNormalMode();
         gameClock.StartClock();
     }
@@ -251,7 +254,11 @@ public sealed class GamePlayManager : MonoBehaviour
         int coins = gameplayRewardHandler != null
             ? gameplayRewardHandler.GetTotalReward()
             : 0;
+         float gameplayTime = Time.realtimeSinceStartup - gameplayStartRealtime;
 
+        GameEvents.RaiseGameTime(gameplayTime);
+        GameEvents.RaisePerformance(distance);
+        GameEvents.RaiseKeysEarned(coins);
         var resultData = new GameResultData(
             gameClock != null ? gameClock.GetTimeString() : "0",
             distance,
@@ -309,4 +316,24 @@ public sealed class GamePlayManager : MonoBehaviour
     }
 
     #endregion
+    /// <summary>
+    /// Reporta el estado actual del gameplay a telemetría.
+    /// Se usa cuando el jugador abandona antes del flujo normal.
+    /// </summary>
+    public void ReportCurrentTelemetrySnapshot()
+    {
+        int distance = ResolveDistanceSafe();
+
+        int coins = gameplayRewardHandler != null
+            ? gameplayRewardHandler.GetTotalReward()
+            : 0;
+
+        float gameplayTime = gameplayStartRealtime > 0f
+            ? Time.realtimeSinceStartup - gameplayStartRealtime
+            : 0f;
+
+        GameEvents.RaiseGameTime(gameplayTime);
+        GameEvents.RaisePerformance(distance);
+        GameEvents.RaiseKeysEarned(coins);
+    }
 }

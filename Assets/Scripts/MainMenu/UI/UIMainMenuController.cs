@@ -63,6 +63,7 @@ public class UIMainMenuController : MonoBehaviour
     public void OpenGamePlay(int IDButton)
     {
         GameManager.Instance.LevelID = IDButton;
+        GameEvents.RaiseLoadStarted();
         uIAnimationManagerMainMenu.OnMainButtonPressed();
         StartCoroutine(RunOpenSceneLoading());
     }

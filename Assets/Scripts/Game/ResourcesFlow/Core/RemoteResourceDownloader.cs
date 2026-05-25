@@ -24,6 +24,7 @@ public class RemoteResourceDownloader
         if (request.result != UnityWebRequest.Result.Success)
         {
             DevLog.Warning($"[Downloader][Texture] Error → {url} | {request.error}");
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.AssetDownloadFailed);
             onFailure?.Invoke();
             yield break;
         }
@@ -33,6 +34,7 @@ public class RemoteResourceDownloader
         if (texture == null)
         {
             DevLog.Warning($"[Downloader][Texture] Null Texture → {url}");
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.TextureNull);
             onFailure?.Invoke();
             yield break;
         }
@@ -68,6 +70,7 @@ public class RemoteResourceDownloader
         if (request.result != UnityWebRequest.Result.Success)
         {
             DevLog.Warning($"[Downloader][Audio] Error → {url} | {request.error}");
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.AssetDownloadFailed);
             onFailure?.Invoke();
             yield break;
         }
@@ -77,6 +80,7 @@ public class RemoteResourceDownloader
         if (clip == null)
         {
             DevLog.Warning($"[Downloader][Audio] Null Clip → {url}");
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.AudioClipNull);
             onFailure?.Invoke();
             yield break;
         }

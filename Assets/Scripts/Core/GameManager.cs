@@ -119,8 +119,9 @@ public class GameManager : MonoBehaviour
     #if UNITY_EDITOR
     [Header("Editor Config")]
     [SerializeField] private string editorApiUrl = "https://justudios.co/test-verygana/stack-tower/config/stacktowerconfig.json";
+    [SerializeField] private string editorTelemetryUrl = "https://justudios.co/test-verygana/telemetry/test_stats.php";
     #endif
-    
+    public string TelemetryUrl { get; private set; }
 
     #endregion
 
@@ -167,12 +168,15 @@ public class GameManager : MonoBehaviour
     private class ConfigData
     {
         public string apiUrl;
+        public string telemetryUrl;
     }
     private IEnumerator LoadConfig()
     {
     #if UNITY_EDITOR
         ApiUrl = editorApiUrl;
+        TelemetryUrl = editorTelemetryUrl;
         DevLog.Log($"[GameManager] API URL (EDITOR): {ApiUrl}");
+        DevLog.Log($"[GameManager] Telemetry URL (EDITOR): {TelemetryUrl}");
         yield break;
     #else
         string path = GetConfigPath();
@@ -197,7 +201,10 @@ public class GameManager : MonoBehaviour
                     throw new System.Exception("Config inválida");
 
                 ApiUrl = config.apiUrl;
+                TelemetryUrl = config.telemetryUrl;
+
                 DevLog.Log($"[GameManager] API URL cargada: {ApiUrl}");
+                DevLog.Log($"[GameManager] Telemetry URL cargada: {TelemetryUrl}");
             }
             catch
             {

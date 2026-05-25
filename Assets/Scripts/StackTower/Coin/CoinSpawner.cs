@@ -2,104 +2,86 @@ using UnityEngine;
 
 /// <summary>
 /// Genera monedas asociadas a la creación de contenedores.
-/// 
-/// Este sistema no depende de físicas ni de colisiones, sino del momento de spawn,
-/// lo que garantiza un comportamiento determinista y controlado.
-/// 
-/// La lógica de frecuencia está desacoplada mediante BrandingManager,
-/// permitiendo configuración dinámica sin modificar código.
+/// Respeta la configuración dinámica de BrandingManager,
+/// donde 0 desactiva completamente el spawn de monedas.
 /// </summary>
-public class CoinSpawner : MonoBehaviour
+public sealed class CoinSpawner : MonoBehaviour
 {
     #region Inspector
 
     [Header("Prefab")]
 
     [SerializeField]
-    [Tooltip("Prefab de la moneda.")]
+    [Tooltip("Prefab de la moneda que se instanciará junto al contenedor.")]
     private GameObject coinPrefab;
 
     [Header("Offset de spawn")]
 
-    /// <summary>
-    /// Distancia horizontal respecto al contenedor.
-    /// Se aplica con dirección aleatoria para distribuir monedas a izquierda o derecha.
-    /// </summary>
     [SerializeField]
-    private float horizontalDistance = 1.5f;
+    [Tooltip("Distancia horizontal respecto al contenedor. Se aplica hacia izquierda o derecha aleatoriamente.")]
+    private float horizontalDistance = 0f;
 
-    /// <summary>
-    /// Offset vertical fijo para posicionar la moneda por encima del contenedor.
-    /// </summary>
     [SerializeField]
-    private float verticalOffset = 1.5f;
+    [Tooltip("Offset vertical respecto al contenedor.")]
+    private float verticalOffset = 0f;
 
     [Header("Dependencias")]
 
-    /// <summary>
-    /// Referencia al estado del gameplay para evitar generar monedas en GameOver.
-    /// </summary>
     [SerializeField]
+    [Tooltip("Referencia al estado del gameplay para evitar generar monedas después del Game Over.")]
     private StackTowerGameplayMechanic gameplayMechanic;
 
     [Header("Opcional")]
 
-    /// <summary>
-    /// Permite condicionar el spawn a la activación de Ads.
-    /// 
-    /// Nota de diseño:
-    /// Esto desacopla la lógica de monetización del sistema principal,
-    /// evitando hardcodear dependencias globales.
-    /// </summary>
     [SerializeField]
+    [Tooltip("Si está activo, solo genera monedas cuando los Ads están habilitados.")]
     private bool requireAdsEnabled = false;
 
     #endregion
 
     #region State
 
-    /// <summary>
-    /// Contador interno de contenedores generados desde el último spawn de moneda.
-    /// </summary>
-    private int containerCounter = 0;
+    private int containerCounter;
 
     #endregion
 
     #region Public API
 
     /// <summary>
-    /// Método invocado por ContainerSpawner al crear un nuevo contenedor.
-    /// 
-    /// Se encarga de:
-    /// - Validar condiciones de gameplay
-    /// - Acumular progreso
-    /// - Determinar si corresponde generar una moneda
+    /// Evalúa si corresponde generar una moneda cuando se crea un nuevo contenedor.
     /// </summary>
+    /// <param name="container">Contenedor recién generado.</param>
     public void OnContainerSpawned(Container container)
     {
-        if (container == null) return;
+        if (container == null)
+            return;
 
-        /// Evita generar monedas si la monetización no está activa
+        if (coinPrefab == null)
+            return;
+
         if (requireAdsEnabled && !GameManager.Instance.IsAdsEnabled)
             return;
 
-        /// Evita generar monedas cuando el juego ha terminado
         if (gameplayMechanic != null && gameplayMechanic.IsGameOver)
             return;
 
+        int requiredContainersPerCoin = BrandingManager.Instance != null
+            ? BrandingManager.Instance.GetContainersPerCoin()
+            : 0;
+
+        if (requiredContainersPerCoin <= 0)
+        {
+            containerCounter = 0;
+            return;
+        }
+
         containerCounter++;
 
-        /// Obtiene configuración dinámica desde Branding
-        int required = BrandingManager.Instance != null
-            ? BrandingManager.Instance.GetContainersPerCoin()
-            : 3;
+        if (containerCounter < requiredContainersPerCoin)
+            return;
 
-        /// Cuando se alcanza el umbral, se genera moneda
-        if (containerCounter >= required)
-        {
-            SpawnCoin(container);
-            containerCounter = 0;
-        }
+        SpawnCoin(container);
+        containerCounter = 0;
     }
 
     #endregion
@@ -107,18 +89,12 @@ public class CoinSpawner : MonoBehaviour
     #region Core
 
     /// <summary>
-    /// Instancia una moneda relativa al contenedor.
-    /// 
-    /// Decisiones de diseño:
-    /// - Posición relativa: asegura coherencia visual con el container
-    /// - Dirección aleatoria: mejora distribución y legibilidad
-    /// - Parenting: mantiene sincronización si el contenedor se mueve
+    /// Instancia una moneda relativa al contenedor y la mantiene como hija
+    /// para conservar coherencia espacial durante el movimiento.
     /// </summary>
+    /// <param name="container">Contenedor usado como referencia de spawn.</param>
     private void SpawnCoin(Container container)
     {
-        if (coinPrefab == null) return;
-
-        /// Selección de lado (izquierda/derecha)
         float direction = Random.value > 0.5f ? 1f : -1f;
 
         Vector3 offset = new Vector3(
@@ -135,7 +111,6 @@ public class CoinSpawner : MonoBehaviour
             Quaternion.identity
         );
 
-        /// Se vincula al contenedor para mantener coherencia espacial
         coin.transform.SetParent(container.transform);
     }
 

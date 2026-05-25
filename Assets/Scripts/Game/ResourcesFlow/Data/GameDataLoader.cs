@@ -21,6 +21,7 @@ public class GameDataLoader
         if (provider == null)
         {
             DevLog.Log("[GameDataLoader] ❌ Provider es null");
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.ProviderNull);
             yield break;
         }
 
@@ -33,6 +34,7 @@ public class GameDataLoader
         if (runtime == null)
         {
             DevLog.Log("[GameDataLoader] ❌ Runtime no inicializado");
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.RuntimeNotInitialized);
             yield break;
         }
 
@@ -109,6 +111,7 @@ public class GameDataLoader
         {
             DevLog.Log("[GameDataLoader] ❌ JSON inválido (game/rewards falló)");
             DevLog.Log("[GameDataLoader] === FIN LOAD (FALLBACK) ===");
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.RemoteJsonInvalid);
             GameManager.Instance.ConfigureAds(false);
             yield break;
         }
@@ -126,6 +129,8 @@ public class GameDataLoader
         if (assetResult != null && assetResult.RequiredFailed > 0)
         {
             DevLog.Log("[GameDataLoader] ❌ Fallaron assets críticos → fallback total");
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.RequiredAssetFailed);
+
 
             provider.Initialize(); 
             GameManager.Instance.ConfigureAds(false);
@@ -176,6 +181,7 @@ public class GameDataLoader
         }
         catch (Exception e)
         {
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.RemoteJsonInvalid);
             DevLog.Log($"[GameDataLoader] Error JSON: {e.Message}");
             return false;
         }

@@ -17,6 +17,7 @@ public class RemoteFetcher
         if (string.IsNullOrWhiteSpace(url))
         {
             DevLog.Error("[RemoteFetcher] URL inválida o vacía");
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.RemoteUrlInvalid);
             onFailure?.Invoke();
             yield break;
         }
@@ -59,7 +60,7 @@ public class RemoteFetcher
                 $"Result: {request.result}\n" +
                 $"Error: {request.error}"
             );
-
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.RemoteRequestFailed);
             onFailure?.Invoke();
             yield break;
         }
@@ -69,6 +70,7 @@ public class RemoteFetcher
         if (string.IsNullOrWhiteSpace(json))
         {
             DevLog.Warning($"[RemoteFetcher] ⚠️ JSON vacío recibido desde: {url}");
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.RemoteJsonEmpty);
             onFailure?.Invoke();
             yield break;
         }

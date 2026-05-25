@@ -2624,9 +2624,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 0ed4356be8ff38e4c9fe4d557e6d36ef, type: 3}
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::ClawController
-  startSpeed: 5
-  maxSpeed: 8
-  acceleration: 0.1
+  startSpeed: 8
+  maxSpeed: 12
+  acceleration: 0.25
   minX: -6
   maxX: 6
   exitSpeed: 6
@@ -4533,10 +4533,7 @@ MonoBehaviour:
   images:
   - {fileID: 0}
   texts: []
-  colors:
-  - {r: 0.7207546, g: 0.07479521, b: 0.07479521, a: 1}
-  - {r: 0.1265574, g: 0.8490566, b: 0.3124488, a: 1}
-  - {r: 0.11879673, g: 0.15242606, b: 0.8867924, a: 1}
+  colors: []
   containersPerCoin: 0
   coinsPerAction: 0
 --- !u!4 &1088857131

@@ -81,27 +81,45 @@ public class GameRuntimeData
     public bool Apply(LevelConfigData remote)
     {
         if (remote == null)
+        {
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.RuntimeValidationFailed);
             return false;
+        }
 
         /// =========================
         /// VALIDACIÓN CRÍTICA
         /// =========================
 
-        bool validGame =
-            remote.game != null &&
-            remote.game.container_images != null &&
-            remote.game.container_images.Count > 0 &&
-            remote.game.container_colors != null &&
-            remote.game.container_colors.Count > 0 &&
-            remote.game.containers_per_key > 0;
-
-        bool validRewards =
-            remote.rewards != null &&
-            remote.rewards.keys_per_action > 0;
-
-        if (!validGame || !validRewards)
+        if (remote.game == null)
         {
-            DevLog.Warning("[Runtime] ❌ Validación crítica fallida");
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.RuntimeValidationFailed);
+            return false;
+        }
+
+        if (remote.game.container_images == null ||
+            remote.game.container_images.Count == 0)
+        {
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.RuntimeValidationFailed);
+            return false;
+        }
+
+        if (remote.game.container_colors == null ||
+            remote.game.container_colors.Count == 0)
+        {
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.RuntimeValidationFailed);
+            return false;
+        }
+
+        if (remote.game.containers_per_key <= 0)
+        {
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.RuntimeValidationFailed);
+            return false;
+        }
+
+        if (remote.rewards == null ||
+            remote.rewards.keys_per_action <= 0)
+        {
+            GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.RuntimeValidationFailed);
             return false;
         }
 
@@ -111,12 +129,20 @@ public class GameRuntimeData
         foreach (var hex in remote.game.container_colors)
         {
             if (string.IsNullOrWhiteSpace(hex) || !IsValidHex(hex))
+            {
+                GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.RuntimeValidationFailed);
                 return false;
+            }
 
             if (ColorUtility.TryParseHtmlString(hex, out Color c))
+            {
                 parsedColors.Add(c);
+            }
             else
+            {
+                GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.RuntimeValidationFailed);
                 return false;
+            }
         }
 
         /// VALIDAR IMÁGENES
@@ -125,7 +151,10 @@ public class GameRuntimeData
         foreach (var img in remote.game.container_images)
         {
             if (img == null || string.IsNullOrWhiteSpace(img.url))
+            {
+                GameEvents.RaiseTechnicalEvent(TelemetryTechnicalEvents.AssetUrlInvalid);
                 return false;
+            }
 
             urls.Add(img.url);
         }

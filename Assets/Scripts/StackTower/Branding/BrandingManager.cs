@@ -1,6 +1,6 @@
+using System;
 using System.Collections.Generic;
 using UnityEngine;
-using System;
 
 /// <summary>
 /// Proveedor centralizado de datos de branding y configuración de gameplay.
@@ -11,18 +11,12 @@ public sealed class BrandingManager : MonoBehaviour
 {
     #region Singleton
 
-    /// <summary>
-    /// Instancia global del sistema de branding.
-    /// </summary>
     public static BrandingManager Instance { get; private set; }
 
     #endregion
 
     #region Events
 
-    /// <summary>
-    /// Evento disparado cuando el branding ha sido sincronizado.
-    /// </summary>
     public static event Action OnBrandingReady;
 
     #endregion
@@ -32,40 +26,37 @@ public sealed class BrandingManager : MonoBehaviour
     [Header("Branding - Imágenes")]
 
     [SerializeField]
-    [Tooltip("Sprites de contenedores (fallback).")]
+    [Tooltip("Sprites de contenedores usados como fallback si no hay datos remotos.")]
     private List<Sprite> images = new();
 
     [Header("Branding - Textos")]
 
     [SerializeField]
-    [Tooltip("Textos de branding (fallback).")]
+    [Tooltip("Textos de branding usados como fallback si no hay datos remotos.")]
     private List<string> texts = new();
 
     [Header("Branding - Colores")]
 
     [SerializeField]
-    [Tooltip("Colores de contenedores (fallback).")]
+    [Tooltip("Colores de contenedores usados como fallback si no hay datos remotos.")]
     private List<Color> colors = new();
 
     [Header("Branding - Gameplay")]
 
     [SerializeField]
-    [Tooltip("Cantidad de contenedores necesarios por moneda (fallback).")]
-    private int containersPerCoin = 3;
+    [Tooltip("Cantidad de contenedores necesarios por moneda. 0 desactiva completamente el spawn de monedas.")]
+    private int containersPerCoin = 0;
 
     [Header("Reward Configuration")]
 
     [SerializeField]
-    [Tooltip("Cantidad de monedas otorgadas por acción (fallback).")]
-    private int coinsPerAction = 2;
+    [Tooltip("Cantidad de monedas otorgadas por acción. 0 desactiva recompensa por acción.")]
+    private int coinsPerAction = 0;
 
     #endregion
 
     #region Private State
 
-    /// <summary>
-    /// Indica si ya se sincronizó con el provider.
-    /// </summary>
     private bool isSyncedWithProvider;
 
     #endregion
@@ -94,7 +85,7 @@ public sealed class BrandingManager : MonoBehaviour
 
     /// <summary>
     /// Sincroniza los datos desde GameDataProvider.
-    /// Es segura contra múltiples llamadas.
+    /// Conserva valores en 0 porque representan configuración válida para desactivar recompensas.
     /// </summary>
     private void TrySyncWithGameDataProvider()
     {
@@ -105,10 +96,6 @@ public sealed class BrandingManager : MonoBehaviour
             return;
 
         var provider = GameDataProvider.Instance;
-
-        // =========================
-        // Branding
-        // =========================
 
         var containerSprites = provider.GetContainers();
         if (containerSprites != null && containerSprites.Count > 0)
@@ -122,18 +109,14 @@ public sealed class BrandingManager : MonoBehaviour
             colors = new List<Color>(containerColors);
         }
 
-        // =========================
-        // Gameplay
-        // =========================
-
         int containersValue = provider.GetContainersPerKey();
-        if (containersValue > 0)
+        if (containersValue >= 0)
         {
             containersPerCoin = containersValue;
         }
 
         int keysPerAction = provider.GetKeysPerAction();
-        if (keysPerAction > 0)
+        if (keysPerAction >= 0)
         {
             coinsPerAction = keysPerAction;
         }
@@ -179,22 +162,24 @@ public sealed class BrandingManager : MonoBehaviour
 
     /// <summary>
     /// Cantidad de contenedores requeridos para generar una moneda.
+    /// 0 significa que el spawn de monedas está desactivado.
     /// </summary>
     public int GetContainersPerCoin()
     {
         TrySyncWithGameDataProvider();
-        return Mathf.Max(1, containersPerCoin);
+        return Mathf.Max(0, containersPerCoin);
     }
 
     /// <summary>
     /// Cantidad de monedas otorgadas por acción.
+    /// 0 significa que la recompensa por acción está desactivada.
     /// </summary>
     public int CoinsPerAction
     {
         get
         {
             TrySyncWithGameDataProvider();
-            return coinsPerAction;
+            return Mathf.Max(0, coinsPerAction);
         }
     }
 
