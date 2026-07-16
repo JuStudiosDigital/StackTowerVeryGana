@@ -69,6 +69,29 @@ public class GameDataProvider : MonoBehaviour
         if (!IsInitialized) return 0;
         return runtimeData.KeysPerAction;
     }
+    /// <summary>
+    /// Obtiene la información runtime del popup promocional.
+    /// </summary>
+    public CopagosRewardPopupData GetRewardPopupData()
+    {
+        if (runtimeData == null)
+        {
+            DevLog.Warning(
+                "[GameDataProvider] No se puede obtener el reward popup. " +
+                "Runtime no inicializado.");
+
+            return null;
+        }
+
+        return runtimeData.RewardPopupData;
+    }
+
+    /// <summary>
+    /// Indica si el JSON cargado contiene al menos un producto.
+    /// </summary>
+    public bool HasRewardPopupProducts =>
+        runtimeData?.RewardPopupData?.HasProducts == true;
+    
 
     #endregion
 }

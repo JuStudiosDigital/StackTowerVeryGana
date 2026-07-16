@@ -10,6 +10,7 @@ public class LevelConfigData
     public AudioData audio;
     public TextData texts;
     public RewardData rewards;
+    public RewardPopupConfigDto reward_popup;
 }
 
 #region Meta

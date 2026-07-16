@@ -23,7 +23,11 @@ public class UIGamePlayController : MonoBehaviour
     /// </summary>
     [SerializeField] private InfoPopup infoPopUp;
 
-    
+    /// <summary>
+    /// Popup de promociones mostrado después del popup de felicitaciones.
+    /// </summary>
+    [SerializeField] private RewardPopup rewardPopup;
+
     /// <summary>
     /// Popup de alerta mostrado durante el gameplay.
     /// </summary>
@@ -73,7 +77,21 @@ public class UIGamePlayController : MonoBehaviour
     [SerializeField] private string gameplaySceneName = "GameScene";
 
     #endregion
+    /// <summary>
+    /// Indica que el flujo de victoria está esperando el cierre del RewardPopup
+    /// para iniciar la recarga del gameplay.
+    /// </summary>
+    private bool isWaitingRewardPopupBeforeReload;
+    /// <summary>
+    /// Evita enviar GAME_FINISHED más de una vez durante
+    /// el mismo flujo de finalización.
+    /// </summary>
+    private bool nextLevelMessageSent;
 
+    /// <summary>
+    /// Evita iniciar más de una vez la recarga del siguiente nivel.
+    /// </summary>
+    private bool nextLevelReloadStarted;
     #region Unity Lifecycle
     void Start()
     {
@@ -89,7 +107,12 @@ public class UIGamePlayController : MonoBehaviour
     /// </summary>
     private void OnEnable()
     {
-        gmeOverPopup.OnConfirmRequested += OnGameOverConfirmed;
+        gmeOverPopup.OnConfirmRequested += OnCongratsConfirmed;
+
+        if (popupManager != null)
+        {
+            popupManager.PopupClosed += HandlePopupClosed;
+        }
         gamePlayManager.GameplayEnded += OnGameplayEnded;
         gamePlayManager.GameplayCompleted += HandleGameplayCompleted;  
         gamePlayManager.GameplayEnterRequested += OnGameplayEnterRequested;
@@ -101,7 +124,12 @@ public class UIGamePlayController : MonoBehaviour
     /// </summary>
     private void OnDisable()
     {
-        gmeOverPopup.OnConfirmRequested -= OnGameOverConfirmed;
+        gmeOverPopup.OnConfirmRequested -= OnCongratsConfirmed;
+
+        if (popupManager != null)
+        {
+            popupManager.PopupClosed -= HandlePopupClosed;
+        }
         gamePlayManager.GameplayEnded -= OnGameplayEnded;
         gamePlayManager.GameplayCompleted -= HandleGameplayCompleted;
         gamePlayManager.GameplayEnterRequested -= OnGameplayEnterRequested;
@@ -199,7 +227,7 @@ public class UIGamePlayController : MonoBehaviour
     /// </summary>
     private IEnumerator RunReloadGameplayFlow()
     {
-        bool useApi = false; // producción
+        bool useApi = true; // producción
    
         string postBody = null;
    
@@ -245,7 +273,202 @@ public class UIGamePlayController : MonoBehaviour
         }
     }
 
+     /// <summary>
+    /// Maneja la confirmación del popup de felicitaciones.
+    /// Reinicia el flujo de carga solicitando nueva data
+    /// y recargando la escena de gameplay.
+    /// </summary>
+    private void OnCongratsConfirmed()
+    {
+        if (nextLevelReloadStarted ||
+        isWaitingRewardPopupBeforeReload)
+        {
+            return;
+        }
 
+        nextLevelMessageSent = false;
+        nextLevelReloadStarted = false;
+
+        Debug.Log("UIGamePlayController: Congrats confirmed, reloading gameplay.");
+        GameEvents.RaiseGameEnded(GameTelemetryResult.Win);
+
+        popupManager.CloseCurrentPopup(() =>
+        {
+            OpenRewardBeforeReload();
+        });
+    }
+
+
+    /// Abre el RewardPopup utilizando los productos recibidos
+    /// desde el JSON general.
+    ///
+    /// Si no existen productos válidos, continúa inmediatamente
+    /// al siguiente nivel y notifica al frontend.
+    /// </summary>
+    private void OpenRewardBeforeReload()
+    {
+        if (rewardPopup == null)
+        {
+            DevLog.Log(
+                "[UIGamePlayController] RewardPopup no está asignado. " +
+                "Continuando al siguiente nivel.");
+
+            CompleteNextLevelFlow();
+            return;
+        }
+
+        GameDataProvider dataProvider = GameDataProvider.Instance;
+
+        if (dataProvider == null || !dataProvider.IsInitialized)
+        {
+            DevLog.Log(
+                "[UIGamePlayController] GameDataProvider no está inicializado. " +
+                "Continuando al siguiente nivel.");
+
+            CompleteNextLevelFlow();
+            return;
+        }
+
+        CopagosRewardPopupData popupData =
+            dataProvider.GetRewardPopupData();
+
+        if (popupData == null ||
+            popupData.products == null ||
+            popupData.products.Count == 0)
+        {
+            DevLog.Log(
+                "[UIGamePlayController] No existen productos de recompensa. " +
+                "Continuando al siguiente nivel.");
+
+            CompleteNextLevelFlow();
+            return;
+        }
+
+        bool hasValidProducts = false;
+
+        for (int i = 0; i < popupData.products.Count; i++)
+        {
+            CopagosProductData product = popupData.products[i];
+
+            if (product != null && product.IsValid)
+            {
+                hasValidProducts = true;
+                break;
+            }
+        }
+
+        if (!hasValidProducts)
+        {
+            DevLog.Log(
+                "[UIGamePlayController] No existen productos válidos. " +
+                "Continuando al siguiente nivel.");
+
+            CompleteNextLevelFlow();
+            return;
+        }
+
+        rewardPopup.Setup(popupData);
+
+        isWaitingRewardPopupBeforeReload = true;
+
+        popupManager.UnlockOverlay();
+        popupManager.OpenPopup(rewardPopup);
+
+        DevLog.Log(
+            "[UIGamePlayController] RewardPopup abierto. " +
+            "GAME_FINISHED se enviará cuando el jugador lo cierre.");
+    }
+   /// <summary>
+    /// Envía GAME_FINISHED y comienza la recarga exactamente una vez.
+    /// </summary>
+    private void CompleteNextLevelFlow()
+    {
+        if (nextLevelReloadStarted)
+        {
+            DevLog.Log(
+                "[UIGamePlayController] El flujo del siguiente nivel " +
+                "ya había comenzado.");
+
+            return;
+        }
+
+        nextLevelReloadStarted = true;
+        isWaitingRewardPopupBeforeReload = false;
+
+        SendNextLevelMessageOnce();
+        BeginWinReloadFlow();
+    }
+
+    /// <summary>
+    /// Envía GAME_FINISHED una sola vez durante el flujo actual.
+    /// </summary>
+    private void SendNextLevelMessageOnce()
+    {
+        if (nextLevelMessageSent)
+        {
+            DevLog.Log(
+                "[UIGamePlayController] GAME_FINISHED ya había sido enviado.");
+
+            return;
+        }
+
+        CopagosWebGLBridge bridge =
+            CopagosWebGLBridge.Instance;
+
+        if (bridge == null)
+        {
+            DevLog.Log(
+                "[UIGamePlayController] No existe CopagosWebGLBridge. " +
+                "No se pudo enviar GAME_FINISHED.");
+
+            return;
+        }
+
+        nextLevelMessageSent = true;
+
+        bridge.SendNextLevelRequested();
+
+        DevLog.Log(
+            "[UIGamePlayController] Solicitud GAME_FINISHED enviada.");
+    }
+
+    /// <summary>
+    /// Detecta el cierre del RewardPopup y continúa
+    /// el flujo hacia el siguiente nivel.
+    /// </summary>
+    /// <param name="closedPopup">
+    /// Popup que terminó de cerrarse.
+    /// </param>
+    private void HandlePopupClosed(
+        PopupBase closedPopup)
+    {
+        if (!isWaitingRewardPopupBeforeReload)
+        {
+            return;
+        }
+
+        if (closedPopup != rewardPopup)
+        {
+            return;
+        }
+
+        DevLog.Log(
+            "[UIGamePlayController] RewardPopup cerrado. " +
+            "Enviando GAME_FINISHED.");
+
+        CompleteNextLevelFlow();
+    }
+
+    /// <summary>
+    /// Inicia la carga del siguiente gameplay después de cerrar el RewardPopup.
+    /// </summary>
+    private void BeginWinReloadFlow()
+    {
+        GameEvents.RaiseLoadStarted();
+
+        uIAnimationManagerGameplay.ShowLoading();
+        StartCoroutine(RunReloadGameplayFlow());
+    }
     /// <summary>
     /// Maneja la confirmación del popup de felicitaciones.
     /// Reinicia el flujo de carga solicitando nueva data

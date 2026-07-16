@@ -118,7 +118,7 @@ public class GameManager : MonoBehaviour
 
     #if UNITY_EDITOR
     [Header("Editor Config")]
-    [SerializeField] private string editorApiUrl = "https://justudios.co/test-verygana/stack-tower/config/stacktowerconfig.json";
+    [SerializeField] private string editorApiUrl = "https://justudios.co/test-verygana/stack-tower/config/stack-towerconfig.json";
     [SerializeField] private string editorTelemetryUrl = "https://justudios.co/test-verygana/telemetry/test_stats.php";
     #endif
     public string TelemetryUrl { get; private set; }
@@ -275,7 +275,7 @@ public class GameManager : MonoBehaviour
     {
 
         // TODO: Quitar para producción, solo para pruebas rápidas en editor sin parámetros
-
+        
         if (string.IsNullOrEmpty(value))
         {
             IsBrandedMode = false;

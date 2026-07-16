@@ -162,7 +162,7 @@ public class UIAnimationManagerGameplay : MonoBehaviour
         if (loadingContainer == null)
             return;
 
-        popupOverlayController.lockHiding = true;
+        
         loadingContainer.gameObject.SetActive(true);
         loadingContainer.localScale = Vector3.one;
         DevLog.Log("UIAnimationManagerGameplay: Loading container shown.");

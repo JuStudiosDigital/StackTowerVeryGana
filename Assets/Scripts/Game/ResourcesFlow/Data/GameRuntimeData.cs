@@ -40,6 +40,14 @@ public class GameRuntimeData
 
     #endregion
 
+    #region Reward Popup
+
+    public CopagosRewardPopupData RewardPopupData { get; private set; } =
+        new CopagosRewardPopupData();
+
+    #endregion
+
+
     #region URLs
 
     private List<string> containerImageUrls = new();
@@ -72,6 +80,7 @@ public class GameRuntimeData
         GameOverMessages = baseData.GameOverMessages;
 
         KeysPerAction = baseData.KeysPerAction;
+        RewardPopupData = new CopagosRewardPopupData();
     }
 
     #endregion
@@ -188,8 +197,22 @@ public class GameRuntimeData
         {
             GameOverMessages = remote.texts.game_over_messages;
         }
-
+        ApplyRewardPopupData(remote.reward_popup);
         return true;
+    }
+    /// <summary>
+    /// Almacena la configuración opcional del popup sin afectar
+    /// las validaciones críticas del juego.
+    /// </summary>
+    private void ApplyRewardPopupData(
+        RewardPopupConfigDto rewardPopupConfig)
+    {
+        RewardPopupData =
+            CopagosRewardPopupData.FromDto(rewardPopupConfig);
+
+        DevLog.Log(
+            $"[GameRuntimeData] Reward popup recibido. " +
+            $"Productos: {RewardPopupData.products.Count}");
     }
 
     private bool IsValidHex(string hex)

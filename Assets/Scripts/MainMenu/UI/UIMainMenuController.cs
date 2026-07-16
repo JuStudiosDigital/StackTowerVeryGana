@@ -80,7 +80,7 @@ public class UIMainMenuController : MonoBehaviour
     /// </summary>
     private IEnumerator RunOpenSceneLoading()
     {
-        bool useApi = false; // producción
+        bool useApi = true; // producción
    
         string postBody = null;
    

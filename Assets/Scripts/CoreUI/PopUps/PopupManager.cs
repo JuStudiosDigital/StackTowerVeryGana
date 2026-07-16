@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 
 /// <summary>
@@ -7,6 +8,15 @@ using UnityEngine;
 /// </summary>
 public class PopupManager : MonoBehaviour
 {
+    #region Events
+
+    /// <summary>
+    /// Evento disparado cuando un popup terminó completamente su cierre.
+    /// </summary>
+    public event Action<PopupBase> PopupClosed;
+
+    #endregion
+
     #region Serialized Fields
 
     /// <summary>
@@ -63,12 +73,22 @@ public class PopupManager : MonoBehaviour
 
     /// <summary>
     /// Cierra el popup actualmente activo, si existe.
-    /// Se encarga de limpiar eventos, ocultar el popup y luego ocultar el overlay.
     /// </summary>
     public void CloseCurrentPopup()
     {
+        CloseCurrentPopup(null);
+    }
+
+    /// <summary>
+    /// Cierra el popup actualmente activo y ejecuta un callback
+    /// cuando terminó completamente la animación de cierre.
+    /// </summary>
+    /// <param name="onClosed">Acción ejecutada al finalizar el cierre.</param>
+    public void CloseCurrentPopup(Action onClosed)
+    {
         if (currentPopup == null)
         {
+            onClosed?.Invoke();
             return;
         }
 
@@ -79,6 +99,9 @@ public class PopupManager : MonoBehaviour
         popupToClose.Hide(() =>
         {
             overlay.Hide();
+
+            PopupClosed?.Invoke(popupToClose);
+            onClosed?.Invoke();
         });
     }
 
@@ -90,6 +113,12 @@ public class PopupManager : MonoBehaviour
     {
         overlay.Lock();
     }
-
+    /// <summary>
+    /// Desbloquea el overlay para permitir cerrar popups tocando el fondo.
+    /// </summary>
+    public void UnlockOverlay()
+    {
+        overlay.Unlock();
+    }
     #endregion
 }

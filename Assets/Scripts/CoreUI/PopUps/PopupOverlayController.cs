@@ -2,6 +2,7 @@ using UnityEngine;
 using UnityEngine.EventSystems;
 using UnityEngine.UI;
 using DG.Tweening;
+using System;
 
 /// <summary>
 /// Controla el overlay oscuro que se muestra detrás de popups o modales.
@@ -47,7 +48,7 @@ public class PopupOverlayController : MonoBehaviour, IPointerClickHandler
     /// </summary>
     public System.Action OnOverlayClicked { get; set; }
 
-    public bool lockHiding { get; set; } = false;
+
 
     #endregion
 
@@ -104,17 +105,18 @@ public class PopupOverlayController : MonoBehaviour, IPointerClickHandler
             .DOFade(0.6f, fadeDuration)
             .SetTarget(this);
     }
+     public void Hide()
+    {
+        Hide(null);
+    }
+
 
     /// <summary>
     /// Oculta el overlay animando su opacidad y desactivando el GameObject al finalizar.
     /// Si existía un tween previo, se cancela antes de iniciar uno nuevo.
     /// </summary>
-    public void Hide()
+    public void Hide(Action onComplete)
     {
-        if (lockHiding)
-        {
-            return;
-        }
         overlayImage.DOKill();
 
         overlayImage
@@ -126,6 +128,7 @@ public class PopupOverlayController : MonoBehaviour, IPointerClickHandler
                 {
                     gameObject.SetActive(false);
                 }
+                onComplete?.Invoke();
             });
     }
 
@@ -135,6 +138,13 @@ public class PopupOverlayController : MonoBehaviour, IPointerClickHandler
     public void Lock()
     {
         _lock = true;
+    }
+     /// <summary>
+    /// Desbloquea la interacción del overlay.
+    /// </summary>
+    public void Unlock()
+    {
+        _lock = false;
     }
 
     #endregion
