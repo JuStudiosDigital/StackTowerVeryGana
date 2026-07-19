@@ -214,18 +214,39 @@ public class GameManager : MonoBehaviour
         }
     #endif
     }
+    /// <summary>
+    /// Construye la URL del archivo config.json ubicado junto al documento WebGL.
+    /// Normaliza los separadores para evitar rutas con doble slash.
+    /// </summary>
     private string GetConfigPath()
     {
     #if UNITY_WEBGL && !UNITY_EDITOR
-        var uri = new System.Uri(Application.absoluteURL);
-        string baseUrl = uri.GetLeftPart(System.UriPartial.Path);
-    
-        if (!baseUrl.EndsWith("/"))
-            baseUrl = baseUrl.Substring(0, baseUrl.LastIndexOf('/') + 1);
-    
-        return baseUrl + "/config.json";
+    if (string.IsNullOrWhiteSpace(Application.absoluteURL))
+        {
+            DevLog.Log("[GameManager] Application.absoluteURL está vacío. Se utilizará una ruta relativa.");
+            return "config.json";
+        }
+
+        var currentUri = new System.Uri(Application.absoluteURL);
+        string baseUrl = currentUri.GetLeftPart(System.UriPartial.Path);
+
+        if (!baseUrl.EndsWith("/", System.StringComparison.Ordinal))
+        {
+            int lastSlashIndex = baseUrl.LastIndexOf('/');
+
+            if (lastSlashIndex >= 0)
+            {
+                baseUrl = baseUrl.Substring(0, lastSlashIndex + 1);
+            }
+        }
+
+        string normalizedBaseUrl = baseUrl.TrimEnd('/');
+        return $"{normalizedBaseUrl}/config.json";
     #else
-        return "file://" + Application.dataPath + "/../config.json";
+        string configFilePath = System.IO.Path.GetFullPath(
+            System.IO.Path.Combine(Application.dataPath, "..", "config.json"));
+
+        return new System.Uri(configFilePath).AbsoluteUri;
     #endif
     }
 
