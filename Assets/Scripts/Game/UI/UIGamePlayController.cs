@@ -95,7 +95,7 @@ public class UIGamePlayController : MonoBehaviour
     #region Unity Lifecycle
     void Start()
     {
-        if (!GameManager.Instance.IsAdsEnabled)
+        if (!GameManager.Instance.IsAdsEnabled && GameManager.Instance.IsBrandedMode)
         {
             OpenAlert();
             coinsCounterContainer.SetActive(false);
